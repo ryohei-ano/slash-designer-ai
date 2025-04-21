@@ -12,17 +12,15 @@ export const metadata: Metadata = {
   description: 'サブスクリプションの管理ができます。',
 }
 
-export default async function BillingPage({ params }: { params: { id: string } }) {
+export default async function BillingPage() {
   const { userId } = await auth()
 
   if (!userId) {
     redirect('/sign-in')
   }
 
-  const workspaceId = params.id
-
   // サブスクリプション情報を取得
-  const { isActive, subscription } = await getUserSubscription(userId)
+  const { isActive } = await getUserSubscription(userId)
 
   return (
     <div className="container mx-auto py-6 space-y-6">

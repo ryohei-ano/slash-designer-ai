@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useCallback, useEffect } from 'react'
+import Image from 'next/image'
 import { useFormContext } from 'react-hook-form'
 import {
   FormField,
@@ -11,6 +12,7 @@ import {
   FormDescription,
 } from '@/components/ui/form'
 import { Button } from '@/components/ui/button'
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Upload, X, FileText, ImageIcon } from 'lucide-react'
 import { useDropzone } from 'react-dropzone'
 import { OnboardingFormValues } from '../ui/onboarding-flow'
@@ -51,9 +53,6 @@ export default function FileUploadStep() {
   })
 
   const removeFile = (index: number) => {
-    // Get the file to be removed
-    const fileToRemove = files[index]
-
     // Update the files state
     setFiles((prev) => {
       const newFiles = [...prev]
@@ -77,7 +76,7 @@ export default function FileUploadStep() {
         }
       })
     }
-  }, [])
+  }, [files])
 
   return (
     <div className="space-y-6">
@@ -133,15 +132,17 @@ export default function FileUploadStep() {
                 <div className="border rounded-lg overflow-hidden">
                   {file.type.includes('image') ? (
                     <div className="aspect-square relative">
-                      <img
+                      <Image
                         src={file.preview}
                         alt={file.name}
-                        className="w-full h-full object-cover"
+                        fill
+                        className="object-cover"
                         onError={(e) => {
                           console.error('Image failed to load', e)
                           // Fallback to icon if image fails to load
-                          e.currentTarget.style.display = 'none'
-                          const parent = e.currentTarget.parentElement
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none'
+                          const parent = target.parentElement
                           if (parent) {
                             parent.innerHTML = `
                               <div class="w-full h-full flex items-center justify-center">

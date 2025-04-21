@@ -19,7 +19,7 @@ export async function POST(req: Request) {
     const { message, workspaceId, conversationId } = await req.json()
 
     // ユーザーがワークスペースにアクセスできるか確認
-    const { data: userWorkspace, error: workspaceError } = await supabaseAdmin
+    const { error: workspaceError } = await supabaseAdmin
       .from('user_workspaces')
       .select('role')
       .eq('user_id', userId)

@@ -5,8 +5,6 @@ import { usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
-import { useSearchParams } from 'next/navigation'
-
 const getTabs = (workspaceId?: string) => [
   {
     name: 'デザイナー',

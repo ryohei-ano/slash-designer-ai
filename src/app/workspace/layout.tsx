@@ -1,15 +1,12 @@
 import { ReactNode } from 'react'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
-import { getUserSubscription } from '@/lib/supabase'
 import { supabaseAdmin } from '@/lib/supabase'
 
 export default async function WorkspaceLayout({
   children,
-  params,
 }: {
   children: ReactNode
-  params?: { [key: string]: string }
 }) {
   const { userId } = await auth()
 

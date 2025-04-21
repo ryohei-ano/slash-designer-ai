@@ -2,8 +2,8 @@ import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
-import { SignIn, SignUp } from '@clerk/nextjs'
 import Image from 'next/image'
+import Link from 'next/link'
 
 export default async function HomePage() {
   // 認証状態を取得（try-catchで囲んで例外処理）
@@ -30,10 +30,10 @@ export default async function HomePage() {
         <p className="mb-8 text-lg text-gray-600">ログイン、または新規登録してください</p>
         <div className="flex gap-4">
           <Button asChild variant="outline">
-            <a href="/sign-in">ログイン</a>
+            <Link href="/sign-in">ログイン</Link>
           </Button>
           <Button asChild>
-            <a href="/sign-up">新規登録</a>
+            <Link href="/sign-up">新規登録</Link>
           </Button>
         </div>
       </main>

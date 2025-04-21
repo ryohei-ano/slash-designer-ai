@@ -1,6 +1,6 @@
 'use server'
 
-import { supabaseAdmin, supabase } from '@/lib/supabase'
+import { supabaseAdmin } from '@/lib/supabase'
 import { OnboardingFormValues } from '@/components/ui/onboarding-flow'
 import { revalidatePath } from 'next/cache'
 import { auth } from '@clerk/nextjs/server'
@@ -86,7 +86,7 @@ export async function updateWorkspace(
     }
 
     // ユーザーがこのワークスペースにアクセス権があるか確認
-    const { data: userWorkspace, error: userWorkspaceError } = await supabaseAdmin
+    const { error: userWorkspaceError } = await supabaseAdmin
       .from('user_workspaces')
       .select('role')
       .eq('user_id', userId)

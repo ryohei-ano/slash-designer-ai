@@ -43,7 +43,6 @@ export function WorkspaceForm({
 }: WorkspaceFormProps) {
   const { user } = useUser()
   const [isEditing, setIsEditing] = useState(false)
-  const [isCreating, setIsCreating] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // 編集用フォーム
@@ -174,7 +173,6 @@ export function WorkspaceForm({
 
         // フォームをリセット
         createForm.reset()
-        setIsCreating(false)
       } else {
         // 作成失敗
         toast({

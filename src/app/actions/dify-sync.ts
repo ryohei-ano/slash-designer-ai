@@ -148,8 +148,17 @@ ${data.urls.length > 0 ? `関連URL: ${data.urls.join(', ')}` : ''}
   }
 }
 
+// ワークスペースファイルの型定義
+interface WorkspaceFile {
+  id: string | number;
+  public_url: string;
+  file_name: string;
+  file_type?: string;
+  file_size?: number;
+}
+
 // ファイルをDifyに同期
-async function syncFileData(files: any[], workspaceId: string) {
+async function syncFileData(files: WorkspaceFile[], workspaceId: string) {
   try {
     if (!DIFY_API_KEY || !DIFY_API_URL) {
       return { success: false, error: 'Dify API設定が見つかりません' }

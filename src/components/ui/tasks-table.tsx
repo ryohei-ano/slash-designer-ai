@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import { getUserTasks } from '@/app/actions/tasks'
 import { useUser } from '@clerk/nextjs'
-import Link from 'next/link'
 import {
   Table,
   TableBody,
@@ -20,7 +19,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -94,7 +92,7 @@ const getUrgencyBadge = (urgency: string) => {
 }
 
 // カテゴリに対応するアイコン
-const getCategoryIcon = (category: string) => {
+const getCategoryIcon = () => {
   return <FileText className="mr-1 h-3 w-3" />
 }
 
@@ -105,7 +103,7 @@ interface TasksTableProps {
 export function TasksTable({ workspaceId }: TasksTableProps) {
   const [tasks, setTasks] = useState<Task[]>([])
   const [isLoading, setIsLoading] = useState(true)
-  const { user } = useUser()
+  useUser() // ユーザー認証状態を取得
 
   // タスクデータの取得（Server Actionを使用）
   useEffect(() => {
@@ -138,7 +136,8 @@ export function TasksTable({ workspaceId }: TasksTableProps) {
         addSuffix: true,
         locale: ja,
       })
-    } catch (e) {
+    } catch (error) {
+      console.error('日付フォーマットエラー:', error)
       return '日付不明'
     }
   }
@@ -210,7 +209,7 @@ export function TasksTable({ workspaceId }: TasksTableProps) {
                       </TableCell>
                       <TableCell>
                         <Badge variant="secondary" className="flex items-center w-fit">
-                          {getCategoryIcon(task.category)}
+                          {getCategoryIcon()}
                           {task.category}
                         </Badge>
                       </TableCell>

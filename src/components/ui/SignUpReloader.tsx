@@ -6,7 +6,6 @@ import { Loading } from './loading'
 
 export function SignUpReloader() {
   const { isLoaded, signUp } = useSignUp()
-  const [hasReloaded, setHasReloaded] = useState(false)
   const [isReloading, setIsReloading] = useState(false)
 
   useEffect(() => {
@@ -35,7 +34,7 @@ export function SignUpReloader() {
         localStorage.removeItem('signUpReloaded')
       }
     }
-  }, [isLoaded, signUp?.status, hasReloaded])
+  }, [isLoaded, signUp?.status])
 
   if (isReloading) {
     return <Loading delay={0} />

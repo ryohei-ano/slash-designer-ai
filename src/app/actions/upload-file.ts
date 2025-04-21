@@ -22,7 +22,7 @@ export async function uploadWorkspaceFile(file: File, workspaceId: string) {
     const fileBuffer = new Uint8Array(arrayBuffer)
 
     // Supabase Storageにファイルをアップロード
-    const { data: uploadData, error: uploadError } = await supabaseAdmin.storage
+    const { error: uploadError } = await supabaseAdmin.storage
       .from('workspace-files')
       .upload(filePath, fileBuffer, {
         contentType: file.type,

@@ -3,7 +3,6 @@
 import Stripe from 'stripe'
 import { supabase } from '@/lib/supabase'
 import { auth } from '@clerk/nextjs/server'
-import { revalidatePath } from 'next/cache'
 
 /**
  * サブスクリプション情報をデータベースに保存する関数

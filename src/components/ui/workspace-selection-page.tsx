@@ -18,13 +18,11 @@ import { AlertCircle } from 'lucide-react'
 interface WorkspaceSelectionPageProps {
   workspaces: Workspace[]
   error?: string
-  isCreateMode?: boolean
 }
 
 export default function WorkspaceSelectionPage({
   workspaces,
   error,
-  isCreateMode,
 }: WorkspaceSelectionPageProps) {
   const router = useRouter()
   const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(null)

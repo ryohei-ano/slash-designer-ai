@@ -15,7 +15,6 @@ import {
   Hourglass,
   FileText,
   Calendar,
-  User,
   Download,
 } from 'lucide-react'
 import { formatDistanceToNow, format } from 'date-fns'
@@ -72,7 +71,7 @@ const getUrgencyBadge = (urgency: string) => {
 }
 
 // カテゴリに対応するアイコン
-const getCategoryIcon = (category: string) => {
+const getCategoryIcon = () => {
   return <FileText className="mr-1 h-4 w-4" />
 }
 
@@ -87,7 +86,8 @@ const formatDate = (dateString: string) => {
       }),
       full: format(date, 'yyyy年MM月dd日 HH:mm', { locale: ja }),
     }
-  } catch (e) {
+  } catch (error) {
+    console.error('日付フォーマットエラー:', error)
     return {
       relative: '日付不明',
       full: '日付不明',
@@ -198,7 +198,7 @@ export default async function TaskDetailPage({
                   <div className="flex justify-between border-b pb-2">
                     <span className="text-muted-foreground">カテゴリ</span>
                     <Badge variant="secondary" className="flex items-center">
-                      {getCategoryIcon(task.category)}
+                      {getCategoryIcon()}
                       {task.category}
                     </Badge>
                   </div>

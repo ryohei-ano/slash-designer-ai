@@ -1,14 +1,11 @@
 'use client'
 
-import { useState, FormEvent, useRef, useEffect, useMemo } from 'react'
+import { useState, FormEvent, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
-import { ScrollArea } from '@/components/ui/scroll-area'
-import { Separator } from '@/components/ui/separator'
-import { Badge } from '@/components/ui/badge'
 import { useToast } from '@/components/ui/use-toast'
-import { SendIcon, Loader2, ArrowUp, Info } from 'lucide-react'
+import { Loader2, ArrowUp } from 'lucide-react'
 import { useUser } from '@clerk/nextjs'
 import ReactMarkdown from 'react-markdown'
 

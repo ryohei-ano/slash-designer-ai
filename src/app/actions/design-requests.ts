@@ -34,7 +34,16 @@ export async function saveDesignRequest(data: RequestData, workspaceId?: string)
     console.log('送信データ:', data)
 
     // リクエストデータを準備
-    const requestData: any = {
+    const requestData: {
+      title: string;
+      description: string;
+      category: string;
+      urgency: '通常' | '急ぎ';
+      status: string;
+      clerk_user_id: string;
+      created_at: string;
+      workspace_id?: string;
+    } = {
       title: data.title,
       description: data.description,
       category: data.category,

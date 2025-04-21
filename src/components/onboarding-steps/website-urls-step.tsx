@@ -49,11 +49,6 @@ export default function WebsiteUrlsStep() {
                   return value
                 }
 
-                const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-                  const value = ensureHttps(e.target.value)
-                  field.onChange(value)
-                }
-
                 const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
                   const value = ensureHttps(e.target.value)
                   field.onChange(value)

@@ -74,12 +74,12 @@ export default function RootLayout({
             <SignedOut>
               <SignInButton>
                 <Button asChild variant="outline">
-                  <a href="/sign-in">ログイン</a>
+                  <Link href="/sign-in">ログイン</Link>
                 </Button>
               </SignInButton>
               <SignUpButton>
                 <Button asChild>
-                  <a href="/sign-up">新規登録</a>
+                  <Link href="/sign-up">新規登録</Link>
                 </Button>
               </SignUpButton>
             </SignedOut>

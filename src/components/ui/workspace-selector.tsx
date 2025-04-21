@@ -6,7 +6,6 @@ import { useUser } from '@clerk/nextjs'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -95,9 +94,6 @@ export function WorkspaceSelector() {
 
     // 現在のワークスペースを更新
     setCurrentWorkspace(workspace)
-
-    // 現在のURLパスを取得
-    const currentPath = window.location.pathname
 
     // 新しいワークスペースページに遷移
     router.push(`/workspace/${workspace.id}/designer`)
