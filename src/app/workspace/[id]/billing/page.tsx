@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   description: 'サブスクリプションの管理ができます。',
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default async function BillingPage({ params }: { params: { id: string } }) {
   const { userId } = await auth()
 

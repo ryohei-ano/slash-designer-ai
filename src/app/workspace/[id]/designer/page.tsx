@@ -7,6 +7,7 @@ export const metadata: Metadata = {
   description: 'AIアシスタントにデザイン依頼を行えます。',
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export default function DesignerPage({ params }: { params: { id: string } }) {
   return (
     <div className="container mx-auto py-6 space-y-6">
