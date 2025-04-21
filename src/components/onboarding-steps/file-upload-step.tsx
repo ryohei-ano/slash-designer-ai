@@ -140,7 +140,7 @@ export default function FileUploadStep() {
                         onError={(e) => {
                           console.error('Image failed to load', e)
                           // Fallback to icon if image fails to load
-                          const target = e.target as HTMLImageElement;
+                          const target = e.target as HTMLImageElement
                           target.style.display = 'none'
                           const parent = target.parentElement
                           if (parent) {

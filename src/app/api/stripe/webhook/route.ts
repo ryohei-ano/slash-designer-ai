@@ -3,7 +3,7 @@ import Stripe from 'stripe'
 
 // Stripeの型拡張
 interface StripeSubscriptionWithPeriodEnd extends Stripe.Subscription {
-  current_period_end: number;
+  current_period_end: number
 }
 import { saveSubscription } from '@/app/actions/subscription'
 import { updateSubscriptionStatus } from '@/lib/supabase/updateSubscriptionStatus'
@@ -68,7 +68,8 @@ export async function POST(req: NextRequest) {
 
       // ✅ Step 2: ステータス更新
       // Stripeの型定義に合わせて期間終了日を取得
-      const nextBillingUnix = (stripeSub as unknown as StripeSubscriptionWithPeriodEnd).current_period_end ?? 0
+      const nextBillingUnix =
+        (stripeSub as unknown as StripeSubscriptionWithPeriodEnd).current_period_end ?? 0
 
       try {
         await updateSubscriptionStatus(clerkUserId, {
@@ -109,7 +110,8 @@ export async function POST(req: NextRequest) {
 
       // ステータス更新
       // Stripeの型定義に合わせて期間終了日を取得
-      const periodEnd = (subscription as unknown as StripeSubscriptionWithPeriodEnd).current_period_end ?? 0
+      const periodEnd =
+        (subscription as unknown as StripeSubscriptionWithPeriodEnd).current_period_end ?? 0
       await updateSubscriptionStatus(clerkUserId, {
         nextBillingDate: periodEnd ? new Date(periodEnd * 1000) : null,
         isActive: subscription.status === 'active',

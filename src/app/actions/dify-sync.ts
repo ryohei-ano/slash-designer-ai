@@ -150,11 +150,11 @@ ${data.urls.length > 0 ? `関連URL: ${data.urls.join(', ')}` : ''}
 
 // ワークスペースファイルの型定義
 interface WorkspaceFile {
-  id: string | number;
-  public_url: string;
-  file_name: string;
-  file_type?: string;
-  file_size?: number;
+  id: string | number
+  public_url: string
+  file_name: string
+  file_type?: string
+  file_size?: number
 }
 
 // ファイルをDifyに同期

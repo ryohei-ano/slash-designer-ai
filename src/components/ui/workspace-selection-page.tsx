@@ -20,10 +20,7 @@ interface WorkspaceSelectionPageProps {
   error?: string
 }
 
-export default function WorkspaceSelectionPage({
-  workspaces,
-  error,
-}: WorkspaceSelectionPageProps) {
+export default function WorkspaceSelectionPage({ workspaces, error }: WorkspaceSelectionPageProps) {
   const router = useRouter()
   const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)

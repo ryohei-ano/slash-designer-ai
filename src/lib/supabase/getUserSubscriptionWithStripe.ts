@@ -3,11 +3,11 @@ import Stripe from 'stripe'
 
 // Stripeの型拡張
 interface StripeSubscriptionWithPeriodEnd extends Stripe.Subscription {
-  current_period_end: number;
+  current_period_end: number
 }
 
 interface StripeSubscriptionItemWithPeriodEnd extends Stripe.SubscriptionItem {
-  current_period_end: number;
+  current_period_end: number
 }
 
 // supabaseがnullの場合に対応するためのダミークライアント
@@ -141,7 +141,8 @@ export async function getUserSubscriptionWithStripe(
 
       // 期間終了日を取得
       const currentPeriodEnd =
-        (stripeSub.items.data[0] as unknown as StripeSubscriptionItemWithPeriodEnd).current_period_end ||
+        (stripeSub.items.data[0] as unknown as StripeSubscriptionItemWithPeriodEnd)
+          .current_period_end ||
         (stripeSub as unknown as StripeSubscriptionWithPeriodEnd).current_period_end ||
         0
 

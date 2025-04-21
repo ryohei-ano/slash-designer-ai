@@ -3,11 +3,7 @@ import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { supabaseAdmin } from '@/lib/supabase'
 
-export default async function WorkspaceLayout({
-  children,
-}: {
-  children: ReactNode
-}) {
+export default async function WorkspaceLayout({ children }: { children: ReactNode }) {
   const { userId } = await auth()
 
   if (!userId) {

@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: 'サブスクリプションの管理ができます。',
 }
 
-export default async function BillingPage() {
+export default async function BillingPage({ params }: { params: { id: string } }) {
   const { userId } = await auth()
 
   if (!userId) {
