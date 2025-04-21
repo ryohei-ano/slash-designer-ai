@@ -2,17 +2,17 @@
 	Installed from https://reactbits.dev/ts/tailwind/
 */
 
-import React from "react";
-import { gsap } from "gsap";
+import React from 'react'
+import { gsap } from 'gsap'
 
 interface MenuItemProps {
-  link: string;
-  text: string;
-  image: string;
+  link: string
+  text: string
+  image: string
 }
 
 interface FlowingMenuProps {
-  items?: MenuItemProps[];
+  items?: MenuItemProps[]
 }
 
 const FlowingMenu: React.FC<FlowingMenuProps> = ({ items = [] }) => {
@@ -24,62 +24,59 @@ const FlowingMenu: React.FC<FlowingMenuProps> = ({ items = [] }) => {
         ))}
       </nav>
     </div>
-  );
-};
+  )
+}
 
 const MenuItem: React.FC<MenuItemProps> = ({ link, text, image }) => {
-  const itemRef = React.useRef<HTMLDivElement>(null);
-  const marqueeRef = React.useRef<HTMLDivElement>(null);
-  const marqueeInnerRef = React.useRef<HTMLDivElement>(null);
+  const itemRef = React.useRef<HTMLDivElement>(null)
+  const marqueeRef = React.useRef<HTMLDivElement>(null)
+  const marqueeInnerRef = React.useRef<HTMLDivElement>(null)
 
-  const animationDefaults = { duration: 0.6, ease: "expo" };
+  const animationDefaults = { duration: 0.6, ease: 'expo' }
 
   const findClosestEdge = (
     mouseX: number,
     mouseY: number,
     width: number,
     height: number
-  ): "top" | "bottom" => {
-    const topEdgeDist = Math.pow(mouseX - width / 2, 2) + Math.pow(mouseY, 2);
-    const bottomEdgeDist =
-      Math.pow(mouseX - width / 2, 2) + Math.pow(mouseY - height, 2);
-    return topEdgeDist < bottomEdgeDist ? "top" : "bottom";
-  };
+  ): 'top' | 'bottom' => {
+    const topEdgeDist = Math.pow(mouseX - width / 2, 2) + Math.pow(mouseY, 2)
+    const bottomEdgeDist = Math.pow(mouseX - width / 2, 2) + Math.pow(mouseY - height, 2)
+    return topEdgeDist < bottomEdgeDist ? 'top' : 'bottom'
+  }
 
   const handleMouseEnter = (ev: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!itemRef.current || !marqueeRef.current || !marqueeInnerRef.current)
-      return;
-    const rect = itemRef.current.getBoundingClientRect();
+    if (!itemRef.current || !marqueeRef.current || !marqueeInnerRef.current) return
+    const rect = itemRef.current.getBoundingClientRect()
     const edge = findClosestEdge(
       ev.clientX - rect.left,
       ev.clientY - rect.top,
       rect.width,
       rect.height
-    );
+    )
 
-    const tl = gsap.timeline({ defaults: animationDefaults });
-    tl.set(marqueeRef.current, { y: edge === "top" ? "-101%" : "101%" })
-      .set(marqueeInnerRef.current, { y: edge === "top" ? "101%" : "-101%" })
-      .to([marqueeRef.current, marqueeInnerRef.current], { y: "0%" });
-  };
+    const tl = gsap.timeline({ defaults: animationDefaults })
+    tl.set(marqueeRef.current, { y: edge === 'top' ? '-101%' : '101%' })
+      .set(marqueeInnerRef.current, { y: edge === 'top' ? '101%' : '-101%' })
+      .to([marqueeRef.current, marqueeInnerRef.current], { y: '0%' })
+  }
 
   const handleMouseLeave = (ev: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!itemRef.current || !marqueeRef.current || !marqueeInnerRef.current)
-      return;
-    const rect = itemRef.current.getBoundingClientRect();
+    if (!itemRef.current || !marqueeRef.current || !marqueeInnerRef.current) return
+    const rect = itemRef.current.getBoundingClientRect()
     const edge = findClosestEdge(
       ev.clientX - rect.left,
       ev.clientY - rect.top,
       rect.width,
       rect.height
-    );
+    )
 
-    const tl = gsap.timeline({ defaults: animationDefaults }) as TimelineMax;
-    tl.to(marqueeRef.current, { y: edge === "top" ? "-101%" : "101%" }).to(
+    const tl = gsap.timeline({ defaults: animationDefaults }) as TimelineMax
+    tl.to(marqueeRef.current, { y: edge === 'top' ? '-101%' : '101%' }).to(
       marqueeInnerRef.current,
-      { y: edge === "top" ? "101%" : "-101%" }
-    );
-  };
+      { y: edge === 'top' ? '101%' : '-101%' }
+    )
+  }
 
   const repeatedMarqueeContent = React.useMemo(() => {
     return Array.from({ length: 4 }).map((_, idx) => (
@@ -92,8 +89,8 @@ const MenuItem: React.FC<MenuItemProps> = ({ link, text, image }) => {
           style={{ backgroundImage: `url(${image})` }}
         />
       </React.Fragment>
-    ));
-  }, [text, image]);
+    ))
+  }, [text, image])
 
   return (
     <div
@@ -119,10 +116,10 @@ const MenuItem: React.FC<MenuItemProps> = ({ link, text, image }) => {
         </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default FlowingMenu;
+export default FlowingMenu
 
 // Note: this is also needed
 // /** @type {import('tailwindcss').Config} */

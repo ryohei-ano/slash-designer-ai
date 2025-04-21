@@ -2,42 +2,42 @@
 	Installed from https://reactbits.dev/ts/tailwind/
 */
 
-import { Renderer, Program, Mesh, Triangle } from "ogl";
-import { useEffect, useRef } from "react";
+import { Renderer, Program, Mesh, Triangle } from 'ogl'
+import { useEffect, useRef } from 'react'
 
 interface BalatroProps {
-  spinRotation?: number;
-  spinSpeed?: number;
-  offset?: [number, number];
-  color1?: string; // HEX e.g., "#DE443B"
-  color2?: string; // HEX e.g., "#006BB4"
-  color3?: string; // HEX e.g., "#162325"
-  contrast?: number;
-  lighting?: number;
-  spinAmount?: number;
-  pixelFilter?: number;
-  spinEase?: number;
-  isRotate?: boolean;
-  mouseInteraction?: boolean;
+  spinRotation?: number
+  spinSpeed?: number
+  offset?: [number, number]
+  color1?: string // HEX e.g., "#DE443B"
+  color2?: string // HEX e.g., "#006BB4"
+  color3?: string // HEX e.g., "#162325"
+  contrast?: number
+  lighting?: number
+  spinAmount?: number
+  pixelFilter?: number
+  spinEase?: number
+  isRotate?: boolean
+  mouseInteraction?: boolean
 }
 
 function hexToVec4(hex: string): [number, number, number, number] {
-  let hexStr = hex.replace("#", "");
+  let hexStr = hex.replace('#', '')
   let r = 0,
     g = 0,
     b = 0,
-    a = 1;
+    a = 1
   if (hexStr.length === 6) {
-    r = parseInt(hexStr.slice(0, 2), 16) / 255;
-    g = parseInt(hexStr.slice(2, 4), 16) / 255;
-    b = parseInt(hexStr.slice(4, 6), 16) / 255;
+    r = parseInt(hexStr.slice(0, 2), 16) / 255
+    g = parseInt(hexStr.slice(2, 4), 16) / 255
+    b = parseInt(hexStr.slice(4, 6), 16) / 255
   } else if (hexStr.length === 8) {
-    r = parseInt(hexStr.slice(0, 2), 16) / 255;
-    g = parseInt(hexStr.slice(2, 4), 16) / 255;
-    b = parseInt(hexStr.slice(4, 6), 16) / 255;
-    a = parseInt(hexStr.slice(6, 8), 16) / 255;
+    r = parseInt(hexStr.slice(0, 2), 16) / 255
+    g = parseInt(hexStr.slice(2, 4), 16) / 255
+    b = parseInt(hexStr.slice(4, 6), 16) / 255
+    a = parseInt(hexStr.slice(6, 8), 16) / 255
   }
-  return [r, g, b, a];
+  return [r, g, b, a]
 }
 
 const vertexShader = `
@@ -48,7 +48,7 @@ void main() {
   vUv = uv;
   gl_Position = vec4(position, 0, 1);
 }
-`;
+`
 
 const fragmentShader = `
 precision highp float;
@@ -122,15 +122,15 @@ void main() {
     vec2 uv = vUv * iResolution.xy;
     gl_FragColor = effect(iResolution.xy, uv);
 }
-`;
+`
 
 export default function Balatro({
   spinRotation = -2.0,
   spinSpeed = 7.0,
   offset = [0.0, 0.0],
-  color1 = "#DE443B",
-  color2 = "#006BB4",
-  color3 = "#162325",
+  color1 = '#DE443B',
+  color2 = '#006BB4',
+  color3 = '#162325',
   contrast = 3.5,
   lighting = 0.4,
   spinAmount = 0.25,
@@ -139,42 +139,38 @@ export default function Balatro({
   isRotate = false,
   mouseInteraction = true,
 }: BalatroProps) {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!containerRef.current) return;
-    const container = containerRef.current;
-    const renderer = new Renderer();
-    const gl = renderer.gl;
-    gl.clearColor(0, 0, 0, 1);
+    if (!containerRef.current) return
+    const container = containerRef.current
+    const renderer = new Renderer()
+    const gl = renderer.gl
+    gl.clearColor(0, 0, 0, 1)
 
-    let program: Program;
+    let program: Program
 
     function resize() {
-      renderer.setSize(container.offsetWidth, container.offsetHeight);
+      renderer.setSize(container.offsetWidth, container.offsetHeight)
       if (program) {
         program.uniforms.iResolution.value = [
           gl.canvas.width,
           gl.canvas.height,
           gl.canvas.width / gl.canvas.height,
-        ];
+        ]
       }
     }
-    window.addEventListener("resize", resize);
-    resize();
+    window.addEventListener('resize', resize)
+    resize()
 
-    const geometry = new Triangle(gl);
+    const geometry = new Triangle(gl)
     program = new Program(gl, {
       vertex: vertexShader,
       fragment: fragmentShader,
       uniforms: {
         iTime: { value: 0 },
         iResolution: {
-          value: [
-            gl.canvas.width,
-            gl.canvas.height,
-            gl.canvas.width / gl.canvas.height,
-          ],
+          value: [gl.canvas.width, gl.canvas.height, gl.canvas.width / gl.canvas.height],
         },
         uSpinRotation: { value: spinRotation },
         uSpinSpeed: { value: spinSpeed },
@@ -190,35 +186,35 @@ export default function Balatro({
         uIsRotate: { value: isRotate },
         uMouse: { value: [0.5, 0.5] },
       },
-    });
+    })
 
-    const mesh = new Mesh(gl, { geometry, program });
-    let animationFrameId: number;
+    const mesh = new Mesh(gl, { geometry, program })
+    let animationFrameId: number
 
     function update(time: number) {
-      animationFrameId = requestAnimationFrame(update);
-      program.uniforms.iTime.value = time * 0.001;
-      renderer.render({ scene: mesh });
+      animationFrameId = requestAnimationFrame(update)
+      program.uniforms.iTime.value = time * 0.001
+      renderer.render({ scene: mesh })
     }
-    animationFrameId = requestAnimationFrame(update);
-    container.appendChild(gl.canvas);
+    animationFrameId = requestAnimationFrame(update)
+    container.appendChild(gl.canvas)
 
     function handleMouseMove(e: MouseEvent) {
-      if (!mouseInteraction) return;
-      const rect = container.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = 1.0 - (e.clientY - rect.top) / rect.height;
-      program.uniforms.uMouse.value = [x, y];
+      if (!mouseInteraction) return
+      const rect = container.getBoundingClientRect()
+      const x = (e.clientX - rect.left) / rect.width
+      const y = 1.0 - (e.clientY - rect.top) / rect.height
+      program.uniforms.uMouse.value = [x, y]
     }
-    container.addEventListener("mousemove", handleMouseMove);
+    container.addEventListener('mousemove', handleMouseMove)
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
-      window.removeEventListener("resize", resize);
-      container.removeEventListener("mousemove", handleMouseMove);
-      container.removeChild(gl.canvas);
-      gl.getExtension("WEBGL_lose_context")?.loseContext();
-    };
+      cancelAnimationFrame(animationFrameId)
+      window.removeEventListener('resize', resize)
+      container.removeEventListener('mousemove', handleMouseMove)
+      container.removeChild(gl.canvas)
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+    }
   }, [
     spinRotation,
     spinSpeed,
@@ -232,8 +228,8 @@ export default function Balatro({
     pixelFilter,
     spinEase,
     isRotate,
-    mouseInteraction
-  ]);
+    mouseInteraction,
+  ])
 
-  return <div ref={containerRef} className="w-full h-full" />;
+  return <div ref={containerRef} className="w-full h-full" />
 }

@@ -1,4 +1,4 @@
-import { Loading } from "@/components/ui/loading"
+import { Loading } from '@/components/ui/loading'
 
 export default function SignInLoading() {
   return <Loading />

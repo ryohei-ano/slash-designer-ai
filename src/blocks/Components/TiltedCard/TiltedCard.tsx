@@ -2,40 +2,40 @@
 	Installed from https://reactbits.dev/ts/tailwind/
 */
 
-import type { SpringOptions } from "framer-motion";
-import { useRef, useState } from "react";
-import { motion, useMotionValue, useSpring } from "framer-motion";
+import type { SpringOptions } from 'framer-motion'
+import { useRef, useState } from 'react'
+import { motion, useMotionValue, useSpring } from 'framer-motion'
 
 interface TiltedCardProps {
-  imageSrc: React.ComponentProps<"img">["src"];
-  altText?: string;
-  captionText?: string;
-  containerHeight?: React.CSSProperties['height'];
-  containerWidth?: React.CSSProperties['width'];
-  imageHeight?: React.CSSProperties['height'];
-  imageWidth?: React.CSSProperties['width'];
-  scaleOnHover?: number;
-  rotateAmplitude?: number;
-  showMobileWarning?: boolean;
-  showTooltip?: boolean;
-  overlayContent?: React.ReactNode;
-  displayOverlayContent?: boolean;
+  imageSrc: React.ComponentProps<'img'>['src']
+  altText?: string
+  captionText?: string
+  containerHeight?: React.CSSProperties['height']
+  containerWidth?: React.CSSProperties['width']
+  imageHeight?: React.CSSProperties['height']
+  imageWidth?: React.CSSProperties['width']
+  scaleOnHover?: number
+  rotateAmplitude?: number
+  showMobileWarning?: boolean
+  showTooltip?: boolean
+  overlayContent?: React.ReactNode
+  displayOverlayContent?: boolean
 }
 
 const springValues: SpringOptions = {
   damping: 30,
   stiffness: 100,
   mass: 2,
-};
+}
 
 export default function TiltedCard({
   imageSrc,
-  altText = "Tilted card image",
-  captionText = "",
-  containerHeight = "300px",
-  containerWidth = "100%",
-  imageHeight = "300px",
-  imageWidth = "300px",
+  altText = 'Tilted card image',
+  captionText = '',
+  containerHeight = '300px',
+  containerWidth = '100%',
+  imageHeight = '300px',
+  imageWidth = '300px',
   scaleOnHover = 1.1,
   rotateAmplitude = 14,
   showMobileWarning = true,
@@ -43,53 +43,53 @@ export default function TiltedCard({
   overlayContent = null,
   displayOverlayContent = false,
 }: TiltedCardProps) {
-  const ref = useRef<HTMLElement>(null);
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-  const rotateX = useSpring(useMotionValue(0), springValues);
-  const rotateY = useSpring(useMotionValue(0), springValues);
-  const scale = useSpring(1, springValues);
-  const opacity = useSpring(0);
+  const ref = useRef<HTMLElement>(null)
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+  const rotateX = useSpring(useMotionValue(0), springValues)
+  const rotateY = useSpring(useMotionValue(0), springValues)
+  const scale = useSpring(1, springValues)
+  const opacity = useSpring(0)
   const rotateFigcaption = useSpring(0, {
     stiffness: 350,
     damping: 30,
     mass: 1,
-  });
+  })
 
-  const [lastY, setLastY] = useState(0);
+  const [lastY, setLastY] = useState(0)
 
   function handleMouse(e: React.MouseEvent<HTMLElement>) {
-    if (!ref.current) return;
+    if (!ref.current) return
 
-    const rect = ref.current.getBoundingClientRect();
-    const offsetX = e.clientX - rect.left - rect.width / 2;
-    const offsetY = e.clientY - rect.top - rect.height / 2;
+    const rect = ref.current.getBoundingClientRect()
+    const offsetX = e.clientX - rect.left - rect.width / 2
+    const offsetY = e.clientY - rect.top - rect.height / 2
 
-    const rotationX = (offsetY / (rect.height / 2)) * -rotateAmplitude;
-    const rotationY = (offsetX / (rect.width / 2)) * rotateAmplitude;
+    const rotationX = (offsetY / (rect.height / 2)) * -rotateAmplitude
+    const rotationY = (offsetX / (rect.width / 2)) * rotateAmplitude
 
-    rotateX.set(rotationX);
-    rotateY.set(rotationY);
+    rotateX.set(rotationX)
+    rotateY.set(rotationY)
 
-    x.set(e.clientX - rect.left);
-    y.set(e.clientY - rect.top);
+    x.set(e.clientX - rect.left)
+    y.set(e.clientY - rect.top)
 
-    const velocityY = offsetY - lastY;
-    rotateFigcaption.set(-velocityY * 0.6);
-    setLastY(offsetY);
+    const velocityY = offsetY - lastY
+    rotateFigcaption.set(-velocityY * 0.6)
+    setLastY(offsetY)
   }
 
   function handleMouseEnter() {
-    scale.set(scaleOnHover);
-    opacity.set(1);
+    scale.set(scaleOnHover)
+    opacity.set(1)
   }
 
   function handleMouseLeave() {
-    opacity.set(0);
-    scale.set(1);
-    rotateX.set(0);
-    rotateY.set(0);
-    rotateFigcaption.set(0);
+    opacity.set(0)
+    scale.set(1)
+    rotateX.set(0)
+    rotateY.set(0)
+    rotateFigcaption.set(0)
   }
 
   return (
@@ -131,9 +131,7 @@ export default function TiltedCard({
         />
 
         {displayOverlayContent && overlayContent && (
-          <motion.div
-            className="absolute top-0 left-0 z-[2] will-change-transform [transform:translateZ(30px)]"
-          >
+          <motion.div className="absolute top-0 left-0 z-[2] will-change-transform [transform:translateZ(30px)]">
             {overlayContent}
           </motion.div>
         )}
@@ -153,5 +151,5 @@ export default function TiltedCard({
         </motion.figcaption>
       )}
     </figure>
-  );
+  )
 }

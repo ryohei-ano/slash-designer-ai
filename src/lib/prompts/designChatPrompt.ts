@@ -43,4 +43,4 @@ JSON形式：
   "category": "バナー / LP / SNS投稿など",
   "urgency": "通常 or 急ぎ"
 }
-`;
+`

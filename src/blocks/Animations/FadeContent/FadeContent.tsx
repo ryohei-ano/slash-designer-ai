@@ -2,52 +2,52 @@
 	Installed from https://reactbits.dev/ts/tailwind/
 */
 
-import { useRef, useEffect, useState, ReactNode } from "react";
+import { useRef, useEffect, useState, ReactNode } from 'react'
 
 interface FadeContentProps {
-  children: ReactNode;
-  blur?: boolean;
-  duration?: number;
-  easing?: string;
-  delay?: number;
-  threshold?: number;
-  initialOpacity?: number;
-  className?: string;
+  children: ReactNode
+  blur?: boolean
+  duration?: number
+  easing?: string
+  delay?: number
+  threshold?: number
+  initialOpacity?: number
+  className?: string
 }
 
 const FadeContent: React.FC<FadeContentProps> = ({
   children,
   blur = false,
   duration = 1000,
-  easing = "ease-out",
+  easing = 'ease-out',
   delay = 0,
   threshold = 0.1,
   initialOpacity = 0,
-  className = "",
+  className = '',
 }) => {
-  const [inView, setInView] = useState(false);
-  const ref = useRef<HTMLDivElement | null>(null);
+  const [inView, setInView] = useState(false)
+  const ref = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
-    const element = ref.current;
-    if (!element) return;
+    const element = ref.current
+    if (!element) return
 
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          observer.unobserve(element);
+          observer.unobserve(element)
           setTimeout(() => {
-            setInView(true);
-          }, delay);
+            setInView(true)
+          }, delay)
         }
       },
       { threshold }
-    );
+    )
 
-    observer.observe(element);
+    observer.observe(element)
 
-    return () => observer.disconnect();
-  }, [threshold, delay]);
+    return () => observer.disconnect()
+  }, [threshold, delay])
 
   return (
     <div
@@ -61,7 +61,7 @@ const FadeContent: React.FC<FadeContentProps> = ({
     >
       {children}
     </div>
-  );
-};
+  )
+}
 
-export default FadeContent;
+export default FadeContent

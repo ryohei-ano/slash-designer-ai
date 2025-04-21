@@ -1,12 +1,12 @@
-"use client"
+'use client'
 
-import { useState } from "react"
-import { useUser } from "@clerk/nextjs"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as z from "zod"
-import { Workspace, updateWorkspace } from "@/app/actions/workspace"
-import { Button } from "@/components/ui/button"
+import { useState } from 'react'
+import { useUser } from '@clerk/nextjs'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { Workspace, updateWorkspace } from '@/app/actions/workspace'
+import { Button } from '@/components/ui/button'
 import {
   Form,
   FormControl,
@@ -14,14 +14,14 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { toast } from "@/components/ui/use-toast"
+} from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { toast } from '@/components/ui/use-toast'
 
 // フォームのバリデーションスキーマ
 const workspaceFormSchema = z.object({
-  name: z.string().min(1, "ワークスペース名は必須です"),
-  industry: z.string().min(1, "業種は必須です"),
+  name: z.string().min(1, 'ワークスペース名は必須です'),
+  industry: z.string().min(1, '業種は必須です'),
   business_overview: z.string().optional(),
 })
 
@@ -32,10 +32,7 @@ interface WorkspaceEditFormProps {
   onWorkspaceUpdate: (workspace: Workspace) => void
 }
 
-export function WorkspaceEditForm({
-  workspace,
-  onWorkspaceUpdate,
-}: WorkspaceEditFormProps) {
+export function WorkspaceEditForm({ workspace, onWorkspaceUpdate }: WorkspaceEditFormProps) {
   const { user } = useUser()
   const [isEditing, setIsEditing] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -46,7 +43,7 @@ export function WorkspaceEditForm({
     defaultValues: {
       name: workspace.name,
       industry: workspace.industry,
-      business_overview: workspace.business_overview || "",
+      business_overview: workspace.business_overview || '',
     },
   })
 
@@ -69,8 +66,8 @@ export function WorkspaceEditForm({
       if (result.success) {
         // 更新成功
         toast({
-          title: "ワークスペースを更新しました",
-          description: "ワークスペース情報が正常に更新されました",
+          title: 'ワークスペースを更新しました',
+          description: 'ワークスペース情報が正常に更新されました',
         })
 
         // 現在のワークスペースを更新
@@ -80,17 +77,17 @@ export function WorkspaceEditForm({
       } else {
         // 更新失敗
         toast({
-          title: "エラー",
-          description: result.error || "ワークスペースの更新に失敗しました",
-          variant: "destructive",
+          title: 'エラー',
+          description: result.error || 'ワークスペースの更新に失敗しました',
+          variant: 'destructive',
         })
       }
     } catch (error) {
-      console.error("Error updating workspace:", error)
+      console.error('Error updating workspace:', error)
       toast({
-        title: "エラー",
-        description: "ワークスペースの更新中にエラーが発生しました",
-        variant: "destructive",
+        title: 'エラー',
+        description: 'ワークスペースの更新中にエラーが発生しました',
+        variant: 'destructive',
       })
     } finally {
       setIsSubmitting(false)
@@ -103,16 +100,12 @@ export function WorkspaceEditForm({
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-medium">ワークスペース情報</h3>
           {!isEditing && (
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={() => setIsEditing(true)}
-            >
+            <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
               編集
             </Button>
           )}
         </div>
-        
+
         {!isEditing ? (
           // 表示モード
           <div className="rounded-md border p-4 space-y-3">
@@ -148,7 +141,7 @@ export function WorkspaceEditForm({
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="industry"
@@ -162,7 +155,7 @@ export function WorkspaceEditForm({
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="business_overview"
@@ -176,24 +169,24 @@ export function WorkspaceEditForm({
                   </FormItem>
                 )}
               />
-              
+
               <div className="flex justify-between">
-                <Button 
-                  type="button" 
-                  variant="outline" 
+                <Button
+                  type="button"
+                  variant="outline"
                   onClick={() => {
                     setIsEditing(false)
                     form.reset({
                       name: workspace.name,
                       industry: workspace.industry,
-                      business_overview: workspace.business_overview || "",
+                      business_overview: workspace.business_overview || '',
                     })
                   }}
                 >
                   キャンセル
                 </Button>
                 <Button type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? "更新中..." : "更新する"}
+                  {isSubmitting ? '更新中...' : '更新する'}
                 </Button>
               </div>
             </form>

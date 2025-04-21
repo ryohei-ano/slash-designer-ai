@@ -1,12 +1,19 @@
-"use client"
+'use client'
 
-import { useState, useCallback, useEffect } from "react"
-import { useFormContext } from "react-hook-form"
-import { FormField, FormItem, FormLabel, FormControl, FormMessage, FormDescription } from "@/components/ui/form"
-import { Button } from "@/components/ui/button"
-import { Upload, X, FileText, ImageIcon } from "lucide-react"
-import { useDropzone } from "react-dropzone"
-import { OnboardingFormValues } from "../ui/onboarding-flow"
+import { useState, useCallback, useEffect } from 'react'
+import { useFormContext } from 'react-hook-form'
+import {
+  FormField,
+  FormItem,
+  FormLabel,
+  FormControl,
+  FormMessage,
+  FormDescription,
+} from '@/components/ui/form'
+import { Button } from '@/components/ui/button'
+import { Upload, X, FileText, ImageIcon } from 'lucide-react'
+import { useDropzone } from 'react-dropzone'
+import { OnboardingFormValues } from '../ui/onboarding-flow'
 
 type FileWithPreview = File & {
   preview: string
@@ -22,55 +29,55 @@ export default function FileUploadStep() {
       const newFiles = acceptedFiles.map((file) =>
         Object.assign(file, {
           preview: URL.createObjectURL(file),
-        }),
+        })
       ) as FileWithPreview[]
 
       setFiles((prev) => [...prev, ...newFiles])
 
       // Update form value
-      const currentFiles = form.getValues("files") || []
-      form.setValue("files", [...currentFiles, ...acceptedFiles], { shouldValidate: true })
+      const currentFiles = form.getValues('files') || []
+      form.setValue('files', [...currentFiles, ...acceptedFiles], { shouldValidate: true })
     },
-    [form],
+    [form]
   )
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
-      "application/pdf": [".pdf"],
-      "image/png": [".png"],
+      'application/pdf': ['.pdf'],
+      'image/png': ['.png'],
     },
     maxSize: 5242880, // 5MB
   })
 
   const removeFile = (index: number) => {
     // Get the file to be removed
-    const fileToRemove = files[index];
-    
+    const fileToRemove = files[index]
+
     // Update the files state
     setFiles((prev) => {
-      const newFiles = [...prev];
-      newFiles.splice(index, 1);
-      return newFiles;
-    });
+      const newFiles = [...prev]
+      newFiles.splice(index, 1)
+      return newFiles
+    })
 
     // Update form value
-    const currentFiles = form.getValues("files") || [];
-    const newFiles = [...currentFiles];
-    newFiles.splice(index, 1);
-    form.setValue("files", newFiles, { shouldValidate: true });
+    const currentFiles = form.getValues('files') || []
+    const newFiles = [...currentFiles]
+    newFiles.splice(index, 1)
+    form.setValue('files', newFiles, { shouldValidate: true })
   }
 
   // Clean up object URLs when component unmounts
   useEffect(() => {
     return () => {
-      files.forEach(file => {
+      files.forEach((file) => {
         if (file.preview) {
-          URL.revokeObjectURL(file.preview);
+          URL.revokeObjectURL(file.preview)
         }
-      });
-    };
-  }, []);
+      })
+    }
+  }, [])
 
   return (
     <div className="space-y-6">
@@ -89,7 +96,9 @@ export default function FileUploadStep() {
               <div
                 {...getRootProps()}
                 className={`border-2 border-dashed rounded-lg p-6 text-center cursor-pointer transition-colors ${
-                  isDragActive ? "border-primary bg-primary/5" : "border-muted-foreground/25 hover:border-primary/50"
+                  isDragActive
+                    ? 'border-primary bg-primary/5'
+                    : 'border-muted-foreground/25 hover:border-primary/50'
                 }`}
               >
                 <input {...getInputProps()} />
@@ -122,23 +131,23 @@ export default function FileUploadStep() {
             {files.map((file, index) => (
               <div key={index} className="relative group">
                 <div className="border rounded-lg overflow-hidden">
-                  {file.type.includes("image") ? (
+                  {file.type.includes('image') ? (
                     <div className="aspect-square relative">
-                      <img 
-                        src={file.preview} 
+                      <img
+                        src={file.preview}
                         alt={file.name}
                         className="w-full h-full object-cover"
                         onError={(e) => {
-                          console.error("Image failed to load", e);
+                          console.error('Image failed to load', e)
                           // Fallback to icon if image fails to load
-                          e.currentTarget.style.display = 'none';
-                          const parent = e.currentTarget.parentElement;
+                          e.currentTarget.style.display = 'none'
+                          const parent = e.currentTarget.parentElement
                           if (parent) {
                             parent.innerHTML = `
                               <div class="w-full h-full flex items-center justify-center">
                                 <ImageIcon class="h-8 w-8 text-muted-foreground" />
                               </div>
-                            `;
+                            `
                           }
                         }}
                       />
@@ -167,7 +176,6 @@ export default function FileUploadStep() {
           </div>
         </div>
       )}
-
     </div>
   )
 }

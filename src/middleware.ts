@@ -1,48 +1,48 @@
-import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
-import type { NextRequest } from "next/server";
+import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
 // カスタムミドルウェア関数とClerkのミドルウェアを組み合わせる
 function customMiddleware(req: NextRequest) {
-  const { nextUrl } = req;
-  const path = nextUrl.pathname;
+  const { nextUrl } = req
+  const path = nextUrl.pathname
 
   // /signin を /sign-in にリダイレクト
-  if (path === "/signin") {
-    return NextResponse.redirect(new URL("/sign-in", nextUrl.origin));
+  if (path === '/signin') {
+    return NextResponse.redirect(new URL('/sign-in', nextUrl.origin))
   }
 
   // /signup を /sign-up にリダイレクト
-  if (path === "/signup") {
-    return NextResponse.redirect(new URL("/sign-up", nextUrl.origin));
+  if (path === '/signup') {
+    return NextResponse.redirect(new URL('/sign-up', nextUrl.origin))
   }
 
   // 次のミドルウェアに進む
-  return NextResponse.next();
+  return NextResponse.next()
 }
 
 // Clerkのミドルウェアを適用
 export default clerkMiddleware((auth, req) => {
   // カスタムミドルウェアを適用
-  const customResponse = customMiddleware(req);
+  const customResponse = customMiddleware(req)
   if (customResponse) {
-    return customResponse;
+    return customResponse
   }
 
   // 公開ルートの場合は認証をスキップ
-  const path = req.nextUrl.pathname;
+  const path = req.nextUrl.pathname
   if (
-    path === "/" || 
-    path.startsWith("/sign-in") || 
-    path.startsWith("/sign-up") || 
-    path === "/signin" || 
-    path === "/signup" || 
-    path.startsWith("/api/") ||
-    path === "/api/stripe/webhook"
+    path === '/' ||
+    path.startsWith('/sign-in') ||
+    path.startsWith('/sign-up') ||
+    path === '/signin' ||
+    path === '/signup' ||
+    path.startsWith('/api/') ||
+    path === '/api/stripe/webhook'
   ) {
-    return NextResponse.next();
+    return NextResponse.next()
   }
-});
+})
 
 // Clerkのミドルウェアが使用するマッチャー設定
 export const config = {
@@ -59,4 +59,4 @@ export const config = {
     '/sign-in(.*)',
     '/sign-up(.*)',
   ],
-};
+}

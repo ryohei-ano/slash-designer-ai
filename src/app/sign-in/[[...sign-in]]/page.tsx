@@ -1,4 +1,4 @@
-import { SignIn } from "@clerk/nextjs";
+import { SignIn } from '@clerk/nextjs'
 
 export default function Page() {
   return (
@@ -6,8 +6,8 @@ export default function Page() {
       <div className="w-full max-w-md flex flex-col items-center">
         <h2 className="text-2xl font-bold text-center mb-6">ログイン</h2>
         <div className="w-full flex justify-center">
-          <SignIn 
-            path="/sign-in" 
+          <SignIn
+            path="/sign-in"
             routing="path"
             signUpUrl="/sign-up"
             redirectUrl="/"
@@ -16,5 +16,5 @@ export default function Page() {
         </div>
       </div>
     </div>
-  );
+  )
 }

@@ -2,73 +2,59 @@
 	Installed from https://reactbits.dev/ts/tailwind/
 */
 
-import React, { useEffect, useRef } from "react";
-import {
-  Renderer,
-  Program,
-  Mesh,
-  Triangle,
-  Transform,
-  Vec3,
-  Camera,
-} from "ogl";
+import React, { useEffect, useRef } from 'react'
+import { Renderer, Program, Mesh, Triangle, Transform, Vec3, Camera } from 'ogl'
 
 type MetaBallsProps = {
-  color?: string;
-  speed?: number;
-  enableMouseInteraction?: boolean;
-  hoverSmoothness?: number;
-  animationSize?: number;
-  ballCount?: number;
-  clumpFactor?: number;
-  cursorBallSize?: number;
-  cursorBallColor?: string;
-  enableTransparency?: boolean;
-};
+  color?: string
+  speed?: number
+  enableMouseInteraction?: boolean
+  hoverSmoothness?: number
+  animationSize?: number
+  ballCount?: number
+  clumpFactor?: number
+  cursorBallSize?: number
+  cursorBallColor?: string
+  enableTransparency?: boolean
+}
 
 function parseHexColor(hex: string): [number, number, number] {
-  const c = hex.replace("#", "");
-  const r = parseInt(c.substring(0, 2), 16) / 255;
-  const g = parseInt(c.substring(2, 4), 16) / 255;
-  const b = parseInt(c.substring(4, 6), 16) / 255;
-  return [r, g, b];
+  const c = hex.replace('#', '')
+  const r = parseInt(c.substring(0, 2), 16) / 255
+  const g = parseInt(c.substring(2, 4), 16) / 255
+  const b = parseInt(c.substring(4, 6), 16) / 255
+  return [r, g, b]
 }
 
 function fract(x: number): number {
-  return x - Math.floor(x);
+  return x - Math.floor(x)
 }
 
 function hash31(p: number): number[] {
-  let r = [p * 0.1031, p * 0.103, p * 0.0973].map(fract);
-  const r_yzx = [r[1], r[2], r[0]];
-  const dotVal =
-    r[0] * (r_yzx[0] + 33.33) +
-    r[1] * (r_yzx[1] + 33.33) +
-    r[2] * (r_yzx[2] + 33.33);
+  let r = [p * 0.1031, p * 0.103, p * 0.0973].map(fract)
+  const r_yzx = [r[1], r[2], r[0]]
+  const dotVal = r[0] * (r_yzx[0] + 33.33) + r[1] * (r_yzx[1] + 33.33) + r[2] * (r_yzx[2] + 33.33)
   for (let i = 0; i < 3; i++) {
-    r[i] = fract(r[i] + dotVal);
+    r[i] = fract(r[i] + dotVal)
   }
-  return r;
+  return r
 }
 
 function hash33(v: number[]): number[] {
-  let p = [v[0] * 0.1031, v[1] * 0.103, v[2] * 0.0973].map(fract);
-  const p_yxz = [p[1], p[0], p[2]];
-  const dotVal =
-    p[0] * (p_yxz[0] + 33.33) +
-    p[1] * (p_yxz[1] + 33.33) +
-    p[2] * (p_yxz[2] + 33.33);
+  let p = [v[0] * 0.1031, v[1] * 0.103, v[2] * 0.0973].map(fract)
+  const p_yxz = [p[1], p[0], p[2]]
+  const dotVal = p[0] * (p_yxz[0] + 33.33) + p[1] * (p_yxz[1] + 33.33) + p[2] * (p_yxz[2] + 33.33)
   for (let i = 0; i < 3; i++) {
-    p[i] = fract(p[i] + dotVal);
+    p[i] = fract(p[i] + dotVal)
   }
-  const p_xxy = [p[0], p[0], p[1]];
-  const p_yxx = [p[1], p[0], p[0]];
-  const p_zyx = [p[2], p[1], p[0]];
-  const result: number[] = [];
+  const p_xxy = [p[0], p[0], p[1]]
+  const p_yxx = [p[1], p[0], p[0]]
+  const p_zyx = [p[2], p[1], p[0]]
+  const result: number[] = []
   for (let i = 0; i < 3; i++) {
-    result[i] = fract((p_xxy[i] + p_yxx[i]) * p_zyx[i]);
+    result[i] = fract((p_xxy[i] + p_yxx[i]) * p_zyx[i])
   }
-  return result;
+  return result
 }
 
 const vertex = `#version 300 es
@@ -77,7 +63,7 @@ layout(location = 0) in vec2 position;
 void main() {
     gl_Position = vec4(position, 0.0, 1.0);
 }
-`;
+`
 
 const fragment = `#version 300 es
 precision highp float;
@@ -122,18 +108,18 @@ void main() {
     }
     outColor = vec4(cFinal * f, enableTransparency ? f : 1.0);
 }
-`;
+`
 
 type BallParams = {
-  st: number;
-  dtFactor: number;
-  baseScale: number;
-  toggle: number;
-  radius: number;
-};
+  st: number
+  dtFactor: number
+  baseScale: number
+  toggle: number
+  radius: number
+}
 
 const MetaBalls: React.FC<MetaBallsProps> = ({
-  color = "#ffffff",
+  color = '#ffffff',
   speed = 0.3,
   enableMouseInteraction = true,
   hoverSmoothness = 0.05,
@@ -141,24 +127,24 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
   ballCount = 15,
   clumpFactor = 1,
   cursorBallSize = 3,
-  cursorBallColor = "#ffffff",
+  cursorBallColor = '#ffffff',
   enableTransparency = false,
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
+    const container = containerRef.current
+    if (!container) return
 
-    const dpr = 1;
+    const dpr = 1
     const renderer = new Renderer({
       dpr,
       alpha: true,
       premultipliedAlpha: false,
-    });
-    const gl = renderer.gl;
-    gl.clearColor(0, 0, 0, enableTransparency ? 0 : 1);
-    container.appendChild(gl.canvas);
+    })
+    const gl = renderer.gl
+    gl.clearColor(0, 0, 0, enableTransparency ? 0 : 1)
+    container.appendChild(gl.canvas)
 
     const camera = new Camera(gl, {
       left: -1,
@@ -167,16 +153,16 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       bottom: -1,
       near: 0.1,
       far: 10,
-    });
-    camera.position.z = 1;
+    })
+    camera.position.z = 1
 
-    const geometry = new Triangle(gl);
-    const [r1, g1, b1] = parseHexColor(color);
-    const [r2, g2, b2] = parseHexColor(cursorBallColor);
+    const geometry = new Triangle(gl)
+    const [r1, g1, b1] = parseHexColor(color)
+    const [r2, g2, b2] = parseHexColor(cursorBallColor)
 
-    const metaBallsUniform: Vec3[] = [];
+    const metaBallsUniform: Vec3[] = []
     for (let i = 0; i < 50; i++) {
-      metaBallsUniform.push(new Vec3(0, 0, 0));
+      metaBallsUniform.push(new Vec3(0, 0, 0))
     }
 
     const program = new Program(gl, {
@@ -195,115 +181,111 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
         iClumpFactor: { value: clumpFactor },
         enableTransparency: { value: enableTransparency },
       },
-    });
+    })
 
-    const mesh = new Mesh(gl, { geometry, program });
-    const scene = new Transform();
-    mesh.setParent(scene);
+    const mesh = new Mesh(gl, { geometry, program })
+    const scene = new Transform()
+    mesh.setParent(scene)
 
-    const maxBalls = 50;
-    const effectiveBallCount = Math.min(ballCount, maxBalls);
-    const ballParams: BallParams[] = [];
+    const maxBalls = 50
+    const effectiveBallCount = Math.min(ballCount, maxBalls)
+    const ballParams: BallParams[] = []
     for (let i = 0; i < effectiveBallCount; i++) {
-      const idx = i + 1;
-      const h1 = hash31(idx);
-      const st = h1[0] * (2 * Math.PI);
-      const dtFactor = 0.1 * Math.PI + h1[1] * (0.4 * Math.PI - 0.1 * Math.PI);
-      const baseScale = 5.0 + h1[1] * (10.0 - 5.0);
-      const h2 = hash33(h1);
-      const toggle = Math.floor(h2[0] * 2.0);
-      const radiusVal = 0.5 + h2[2] * (2.0 - 0.5);
-      ballParams.push({ st, dtFactor, baseScale, toggle, radius: radiusVal });
+      const idx = i + 1
+      const h1 = hash31(idx)
+      const st = h1[0] * (2 * Math.PI)
+      const dtFactor = 0.1 * Math.PI + h1[1] * (0.4 * Math.PI - 0.1 * Math.PI)
+      const baseScale = 5.0 + h1[1] * (10.0 - 5.0)
+      const h2 = hash33(h1)
+      const toggle = Math.floor(h2[0] * 2.0)
+      const radiusVal = 0.5 + h2[2] * (2.0 - 0.5)
+      ballParams.push({ st, dtFactor, baseScale, toggle, radius: radiusVal })
     }
 
-    const mouseBallPos = { x: 0, y: 0 };
-    let pointerInside = false;
-    let pointerX = 0;
-    let pointerY = 0;
+    const mouseBallPos = { x: 0, y: 0 }
+    let pointerInside = false
+    let pointerX = 0
+    let pointerY = 0
 
     function resize() {
-      if (!container) return;
-      const width = container.clientWidth;
-      const height = container.clientHeight;
-      renderer.setSize(width * dpr, height * dpr);
-      gl.canvas.style.width = `${width}px`;
-      gl.canvas.style.height = `${height}px`;
-      program.uniforms.iResolution.value.set(
-        gl.canvas.width,
-        gl.canvas.height,
-        0
-      );
+      if (!container) return
+      const width = container.clientWidth
+      const height = container.clientHeight
+      renderer.setSize(width * dpr, height * dpr)
+      gl.canvas.style.width = `${width}px`
+      gl.canvas.style.height = `${height}px`
+      program.uniforms.iResolution.value.set(gl.canvas.width, gl.canvas.height, 0)
     }
-    window.addEventListener("resize", resize);
-    resize();
+    window.addEventListener('resize', resize)
+    resize()
 
     function onPointerMove(e: PointerEvent) {
-      if (!enableMouseInteraction || !container) return;
-      const rect = container.getBoundingClientRect();
-      const px = e.clientX - rect.left;
-      const py = e.clientY - rect.top;
-      pointerX = (px / rect.width) * gl.canvas.width;
-      pointerY = (1 - py / rect.height) * gl.canvas.height;
+      if (!enableMouseInteraction || !container) return
+      const rect = container.getBoundingClientRect()
+      const px = e.clientX - rect.left
+      const py = e.clientY - rect.top
+      pointerX = (px / rect.width) * gl.canvas.width
+      pointerY = (1 - py / rect.height) * gl.canvas.height
     }
     function onPointerEnter() {
-      if (!enableMouseInteraction) return;
-      pointerInside = true;
+      if (!enableMouseInteraction) return
+      pointerInside = true
     }
     function onPointerLeave() {
-      if (!enableMouseInteraction) return;
-      pointerInside = false;
+      if (!enableMouseInteraction) return
+      pointerInside = false
     }
-    container.addEventListener("pointermove", onPointerMove);
-    container.addEventListener("pointerenter", onPointerEnter);
-    container.addEventListener("pointerleave", onPointerLeave);
+    container.addEventListener('pointermove', onPointerMove)
+    container.addEventListener('pointerenter', onPointerEnter)
+    container.addEventListener('pointerleave', onPointerLeave)
 
-    const startTime = performance.now();
-    let animationFrameId: number;
+    const startTime = performance.now()
+    let animationFrameId: number
     function update(t: number) {
-      animationFrameId = requestAnimationFrame(update);
-      const elapsed = (t - startTime) * 0.001;
-      program.uniforms.iTime.value = elapsed;
+      animationFrameId = requestAnimationFrame(update)
+      const elapsed = (t - startTime) * 0.001
+      program.uniforms.iTime.value = elapsed
 
       for (let i = 0; i < effectiveBallCount; i++) {
-        const p = ballParams[i];
-        const dt = elapsed * speed * p.dtFactor;
-        const th = p.st + dt;
-        const x = Math.cos(th);
-        const y = Math.sin(th + dt * p.toggle);
-        const posX = x * p.baseScale * clumpFactor;
-        const posY = y * p.baseScale * clumpFactor;
-        metaBallsUniform[i].set(posX, posY, p.radius);
+        const p = ballParams[i]
+        const dt = elapsed * speed * p.dtFactor
+        const th = p.st + dt
+        const x = Math.cos(th)
+        const y = Math.sin(th + dt * p.toggle)
+        const posX = x * p.baseScale * clumpFactor
+        const posY = y * p.baseScale * clumpFactor
+        metaBallsUniform[i].set(posX, posY, p.radius)
       }
 
-      let targetX: number, targetY: number;
+      let targetX: number, targetY: number
       if (pointerInside) {
-        targetX = pointerX;
-        targetY = pointerY;
+        targetX = pointerX
+        targetY = pointerY
       } else {
-        const cx = gl.canvas.width * 0.5;
-        const cy = gl.canvas.height * 0.5;
-        const rx = gl.canvas.width * 0.15;
-        const ry = gl.canvas.height * 0.15;
-        targetX = cx + Math.cos(elapsed * speed) * rx;
-        targetY = cy + Math.sin(elapsed * speed) * ry;
+        const cx = gl.canvas.width * 0.5
+        const cy = gl.canvas.height * 0.5
+        const rx = gl.canvas.width * 0.15
+        const ry = gl.canvas.height * 0.15
+        targetX = cx + Math.cos(elapsed * speed) * rx
+        targetY = cy + Math.sin(elapsed * speed) * ry
       }
-      mouseBallPos.x += (targetX - mouseBallPos.x) * hoverSmoothness;
-      mouseBallPos.y += (targetY - mouseBallPos.y) * hoverSmoothness;
-      program.uniforms.iMouse.value.set(mouseBallPos.x, mouseBallPos.y, 0);
+      mouseBallPos.x += (targetX - mouseBallPos.x) * hoverSmoothness
+      mouseBallPos.y += (targetY - mouseBallPos.y) * hoverSmoothness
+      program.uniforms.iMouse.value.set(mouseBallPos.x, mouseBallPos.y, 0)
 
-      renderer.render({ scene, camera });
+      renderer.render({ scene, camera })
     }
-    animationFrameId = requestAnimationFrame(update);
+    animationFrameId = requestAnimationFrame(update)
 
     return () => {
-      cancelAnimationFrame(animationFrameId);
-      window.removeEventListener("resize", resize);
-      container.removeEventListener("pointermove", onPointerMove);
-      container.removeEventListener("pointerenter", onPointerEnter);
-      container.removeEventListener("pointerleave", onPointerLeave);
-      container.removeChild(gl.canvas);
-      gl.getExtension("WEBGL_lose_context")?.loseContext();
-    };
+      cancelAnimationFrame(animationFrameId)
+      window.removeEventListener('resize', resize)
+      container.removeEventListener('pointermove', onPointerMove)
+      container.removeEventListener('pointerenter', onPointerEnter)
+      container.removeEventListener('pointerleave', onPointerLeave)
+      container.removeChild(gl.canvas)
+      gl.getExtension('WEBGL_lose_context')?.loseContext()
+    }
   }, [
     color,
     cursorBallColor,
@@ -315,9 +297,9 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     clumpFactor,
     cursorBallSize,
     enableTransparency,
-  ]);
+  ])
 
-  return <div ref={containerRef} className="w-full h-full relative" />;
-};
+  return <div ref={containerRef} className="w-full h-full relative" />
+}
 
-export default MetaBalls;
+export default MetaBalls

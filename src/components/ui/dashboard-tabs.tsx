@@ -1,17 +1,23 @@
-"use client"
+'use client'
 
-import { useState, useEffect } from "react"
-import { usePathname } from "next/navigation"
-import Link from "next/link"
-import { cn } from "@/lib/utils"
+import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
+import Link from 'next/link'
+import { cn } from '@/lib/utils'
 
-import { useSearchParams } from "next/navigation"
+import { useSearchParams } from 'next/navigation'
 
 const getTabs = (workspaceId?: string) => [
-  { name: "デザイナー", href: workspaceId ? `/workspace/${workspaceId}/designer` : "/workspace/select" },
-  { name: "タスク", href: workspaceId ? `/workspace/${workspaceId}/tasks` : "/workspace/select" },
-  { name: "チャット", href: workspaceId ? `/workspace/${workspaceId}/chat` : "/workspace/select" },
-  { name: "お支払い", href: workspaceId ? `/workspace/${workspaceId}/billing` : "/workspace/select" },
+  {
+    name: 'デザイナー',
+    href: workspaceId ? `/workspace/${workspaceId}/designer` : '/workspace/select',
+  },
+  { name: 'タスク', href: workspaceId ? `/workspace/${workspaceId}/tasks` : '/workspace/select' },
+  { name: 'チャット', href: workspaceId ? `/workspace/${workspaceId}/chat` : '/workspace/select' },
+  {
+    name: 'お支払い',
+    href: workspaceId ? `/workspace/${workspaceId}/billing` : '/workspace/select',
+  },
 ]
 
 export function DashboardSidebar() {
@@ -39,24 +45,24 @@ export function DashboardSidebar() {
     checkIfMobile()
 
     // Add event listener for resize
-    window.addEventListener("resize", checkIfMobile)
+    window.addEventListener('resize', checkIfMobile)
 
     // Cleanup
-    return () => window.removeEventListener("resize", checkIfMobile)
+    return () => window.removeEventListener('resize', checkIfMobile)
   }, [])
 
   // Store sidebar state in localStorage
   useEffect(() => {
     if (!isMobile) {
-      localStorage.setItem("sidebarOpen", isOpen.toString())
+      localStorage.setItem('sidebarOpen', isOpen.toString())
     }
   }, [isOpen, isMobile])
 
   // Load sidebar state from localStorage on mount
   useEffect(() => {
-    const storedState = localStorage.getItem("sidebarOpen")
+    const storedState = localStorage.getItem('sidebarOpen')
     if (storedState !== null && !isMobile) {
-      setIsOpen(storedState === "true")
+      setIsOpen(storedState === 'true')
     }
   }, [isMobile])
 
@@ -65,9 +71,9 @@ export function DashboardSidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed bg-white left-0 top-16 z-40 h-[calc(100vh-4rem)] text-sidebar-foreground border-r border-sidebar-border transition-all duration-300 ease-in-out",
-          isOpen ? "w-64" : "w-16",
-          isMobile && !isOpen && "-translate-x-full"
+          'fixed bg-white left-0 top-16 z-40 h-[calc(100vh-4rem)] text-sidebar-foreground border-r border-sidebar-border transition-all duration-300 ease-in-out',
+          isOpen ? 'w-64' : 'w-16',
+          isMobile && !isOpen && '-translate-x-full'
         )}
       >
         {/* Sidebar header */}
@@ -76,9 +82,9 @@ export function DashboardSidebar() {
           <button
             onClick={() => setIsOpen(!isOpen)}
             className="p-2 rounded-md bg-sidebar-accent hover:bg-sidebar-primary hover:text-sidebar-primary-foreground text-sidebar-foreground transition-colors"
-            aria-label={isOpen ? "サイドバーを閉じる" : "サイドバーを開く"}
+            aria-label={isOpen ? 'サイドバーを閉じる' : 'サイドバーを開く'}
           >
-            <span className="text-lg font-bold">{isOpen ? "←" : "→"}</span>
+            <span className="text-lg font-bold">{isOpen ? '←' : '→'}</span>
           </button>
         </div>
 
@@ -86,20 +92,26 @@ export function DashboardSidebar() {
         <nav className="p-4">
           <ul className="space-y-2">
             {tabs.map((tab) => {
-              const isActive = pathname === tab.href || (pathname === "/workspace" && tab.href.includes("/workspace/") && tab.href.endsWith("/designer"))
+              const isActive =
+                pathname === tab.href ||
+                (pathname === '/workspace' &&
+                  tab.href.includes('/workspace/') &&
+                  tab.href.endsWith('/designer'))
 
               return (
                 <li key={tab.href}>
                   <Link
                     href={tab.href}
                     className={cn(
-                      "flex items-center rounded-md p-2 transition-colors",
+                      'flex items-center rounded-md p-2 transition-colors',
                       isActive
-                        ? "bg-sidebar-primary text-sidebar-primary-foreground"
-                        : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                        ? 'bg-sidebar-primary text-sidebar-primary-foreground'
+                        : 'hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                     )}
                   >
-                    <span className={cn("text-xl", isOpen ? "mr-3" : "mx-auto")}>{/* No icons as requested */}</span>
+                    <span className={cn('text-xl', isOpen ? 'mr-3' : 'mx-auto')}>
+                      {/* No icons as requested */}
+                    </span>
                     {isOpen && <span>{tab.name}</span>}
                   </Link>
                 </li>
@@ -148,10 +160,13 @@ export function DashboardTabs() {
             key={tab.href}
             href={tab.href}
             className={cn(
-              "text-sm font-medium border-b-2 transition-colors",
-              pathname === tab.href || (pathname === "/workspace" && tab.href.includes("/workspace/") && tab.href.endsWith("/designer"))
-                ? "border-primary text-primary font-semibold"
-                : "border-transparent text-muted-foreground hover:text-foreground hover:border-muted"
+              'text-sm font-medium border-b-2 transition-colors',
+              pathname === tab.href ||
+                (pathname === '/workspace' &&
+                  tab.href.includes('/workspace/') &&
+                  tab.href.endsWith('/designer'))
+                ? 'border-primary text-primary font-semibold'
+                : 'border-transparent text-muted-foreground hover:text-foreground hover:border-muted'
             )}
           >
             {tab.name}

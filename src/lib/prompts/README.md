@@ -14,7 +14,7 @@
 プロンプトを使用する際は、以下のようにインデックスファイルからインポートします：
 
 ```typescript
-import { DESIGN_CHAT_SYSTEM_PROMPT } from "@/lib/prompts";
+import { DESIGN_CHAT_SYSTEM_PROMPT } from '@/lib/prompts'
 ```
 
 ### 新しいプロンプトの追加
@@ -27,14 +27,14 @@ import { DESIGN_CHAT_SYSTEM_PROMPT } from "@/lib/prompts";
 export const MY_NEW_PROMPT = `
 プロンプトの内容をここに記述します。
 複数行にわたる内容も記述できます。
-`;
+`
 ```
 
 3. `index.ts` ファイルに新しいプロンプトをエクスポートする行を追加します：
 
 ```typescript
 // index.ts に追加
-export { MY_NEW_PROMPT } from './myNewPrompt';
+export { MY_NEW_PROMPT } from './myNewPrompt'
 ```
 
 ## 利点

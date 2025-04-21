@@ -2,29 +2,31 @@
 	Installed from https://reactbits.dev/ts/tailwind/
 */
 
-import React from "react";
+import React from 'react'
 
-type StarBorderProps<T extends React.ElementType> =
-  React.ComponentPropsWithoutRef<T> & {
-    as?: T;
-    className?: string;
-    children?: React.ReactNode;
-    color?: string;
-    speed?: React.CSSProperties['animationDuration'];
-  }
+type StarBorderProps<T extends React.ElementType> = React.ComponentPropsWithoutRef<T> & {
+  as?: T
+  className?: string
+  children?: React.ReactNode
+  color?: string
+  speed?: React.CSSProperties['animationDuration']
+}
 
-const StarBorder = <T extends React.ElementType = "button">({
+const StarBorder = <T extends React.ElementType = 'button'>({
   as,
-  className = "",
-  color = "white",
-  speed = "6s",
+  className = '',
+  color = 'white',
+  speed = '6s',
   children,
   ...rest
 }: StarBorderProps<T>) => {
-  const Component = as || "button";
+  const Component = as || 'button'
 
   return (
-    <Component className={`relative inline-block py-[1px] overflow-hidden rounded-[20px] ${className}`} {...rest}>
+    <Component
+      className={`relative inline-block py-[1px] overflow-hidden rounded-[20px] ${className}`}
+      {...rest}
+    >
       <div
         className="absolute w-[300%] h-[50%] opacity-70 bottom-[-11px] right-[-250%] rounded-full animate-star-movement-bottom z-0"
         style={{
@@ -43,10 +45,10 @@ const StarBorder = <T extends React.ElementType = "button">({
         {children}
       </div>
     </Component>
-  );
-};
+  )
+}
 
-export default StarBorder;
+export default StarBorder
 
 // tailwind.config.js
 // module.exports = {

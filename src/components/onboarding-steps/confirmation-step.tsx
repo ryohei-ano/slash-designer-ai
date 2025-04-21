@@ -1,8 +1,8 @@
-import { useFormContext } from "react-hook-form"
-import { Card, CardContent } from "@/components/ui/card"
-import { Loader2, CheckCircle } from "lucide-react"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { OnboardingFormValues } from "../ui/onboarding-flow"
+import { useFormContext } from 'react-hook-form'
+import { Card, CardContent } from '@/components/ui/card'
+import { Loader2, CheckCircle } from 'lucide-react'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { OnboardingFormValues } from '../ui/onboarding-flow'
 
 interface ConfirmationStepProps {
   isSubmitting: boolean
@@ -14,14 +14,14 @@ export default function ConfirmationStep({ isSubmitting }: ConfirmationStepProps
 
   // Map industry value to label
   const industryMap: Record<string, string> = {
-    saas: "SaaS",
-    ec: "EC",
-    education: "教育",
-    real_estate: "不動産",
-    finance: "金融",
-    healthcare: "ヘルスケア",
-    manufacturing: "製造業",
-    other: "その他",
+    saas: 'SaaS',
+    ec: 'EC',
+    education: '教育',
+    real_estate: '不動産',
+    finance: '金融',
+    healthcare: 'ヘルスケア',
+    manufacturing: '製造業',
+    other: 'その他',
   }
 
   return (
@@ -83,7 +83,7 @@ export default function ConfirmationStep({ isSubmitting }: ConfirmationStepProps
                           {item.url}
                         </a>
                       </li>
-                    ),
+                    )
                 )}
               </ul>
             </div>
@@ -91,7 +91,9 @@ export default function ConfirmationStep({ isSubmitting }: ConfirmationStepProps
 
           {files && files.length > 0 && (
             <div>
-              <h3 className="text-sm font-medium text-muted-foreground">アップロードされたファイル</h3>
+              <h3 className="text-sm font-medium text-muted-foreground">
+                アップロードされたファイル
+              </h3>
               <ul className="list-disc list-inside">
                 {files.map((file: File, index) => (
                   <li key={index}>{file.name}</li>

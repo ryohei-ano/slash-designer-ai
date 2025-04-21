@@ -1,22 +1,28 @@
-"use client"
+'use client'
 
-import { useFormContext } from "react-hook-form"
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { OnboardingFormValues } from "../ui/onboarding-flow"
+import { useFormContext } from 'react-hook-form'
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select'
+import { OnboardingFormValues } from '../ui/onboarding-flow'
 
 export default function IndustryStep() {
   const form = useFormContext<OnboardingFormValues>()
 
   const industries = [
-    { value: "saas", label: "SaaS" },
-    { value: "ec", label: "EC" },
-    { value: "education", label: "教育" },
-    { value: "real_estate", label: "不動産" },
-    { value: "finance", label: "金融" },
-    { value: "healthcare", label: "ヘルスケア" },
-    { value: "manufacturing", label: "製造業" },
-    { value: "other", label: "その他" },
+    { value: 'saas', label: 'SaaS' },
+    { value: 'ec', label: 'EC' },
+    { value: 'education', label: '教育' },
+    { value: 'real_estate', label: '不動産' },
+    { value: 'finance', label: '金融' },
+    { value: 'healthcare', label: 'ヘルスケア' },
+    { value: 'manufacturing', label: '製造業' },
+    { value: 'other', label: 'その他' },
   ]
 
   return (

@@ -1,11 +1,11 @@
-import { Metadata } from "next";
-import DesignChat from "@/components/ui/design-chat";
-import { Toaster } from "@/components/ui/toaster";
+import { Metadata } from 'next'
+import DesignChat from '@/components/ui/design-chat'
+import { Toaster } from '@/components/ui/toaster'
 
 export const metadata: Metadata = {
-  title: "デザイン依頼 | ワークスペース",
-  description: "AIアシスタントにデザイン依頼を行えます。",  
-};
+  title: 'デザイン依頼 | ワークスペース',
+  description: 'AIアシスタントにデザイン依頼を行えます。',
+}
 
 export default function DesignerPage() {
   return (
@@ -16,9 +16,9 @@ export default function DesignerPage() {
           AIアシスタントにデザインの依頼内容を伝えてください。詳細な情報を伝えるほど、より正確なデザインが作成できます。
         </p>
       </div>
-      
+
       <DesignChat />
       <Toaster />
     </div>
-  );
+  )
 }

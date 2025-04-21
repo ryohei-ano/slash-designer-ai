@@ -1,7 +1,7 @@
-import { useFormContext } from "react-hook-form"
-import { FormField, FormItem, FormLabel, FormControl, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { OnboardingFormValues } from "../ui/onboarding-flow"
+import { useFormContext } from 'react-hook-form'
+import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { OnboardingFormValues } from '../ui/onboarding-flow'
 
 export default function CompanyNameStep() {
   const form = useFormContext<OnboardingFormValues>()

@@ -13,7 +13,11 @@ import Link from 'next/link'
 import { Noto_Sans_JP, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { SignUpReloader } from '@/components/ui/SignUpReloader'
-import { WorkspaceSelectorWithCondition, HeaderTabsWithCondition, ConditionalHeader } from '@/components/ui/conditional-header-components'
+import {
+  WorkspaceSelectorWithCondition,
+  HeaderTabsWithCondition,
+  ConditionalHeader,
+} from '@/components/ui/conditional-header-components'
 import { Toaster } from '@/components/ui/toaster'
 import { Button } from '@/components/ui/button'
 
@@ -30,7 +34,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: '/designer（スラッシュデザイナー） | コマンド1つで、デザインを依頼',
-  description: 'コマンド1つで、デザインを依頼できるサービスです。AIがあなたのデザインをサポートします。',
+  description:
+    'コマンド1つで、デザインを依頼できるサービスです。AIがあなたのデザインをサポートします。',
 }
 
 export default function RootLayout({
@@ -46,25 +51,15 @@ export default function RootLayout({
             <div className="flex items-center gap-2">
               <SignedIn>
                 <Link href="/workspace/select" className="flex items-center gap-2">
-                  <Image
-                    src="/logo.png"
-                    alt="Logo"
-                    width={100} 
-                    height={40}
-                  />
+                  <Image src="/logo.png" alt="Logo" width={100} height={40} />
                 </Link>
               </SignedIn>
               <SignedOut>
                 <Link href="/" className="flex items-center gap-2">
-                  <Image
-                    src="/logo.png"
-                    alt="Logo"
-                    width={100} 
-                    height={40}
-                  />
+                  <Image src="/logo.png" alt="Logo" width={100} height={40} />
                 </Link>
               </SignedOut>
-              <SignedIn　>
+              <SignedIn>
                 {/* ワークスペース選択画面では非表示 */}
                 <WorkspaceSelectorWithCondition />
               </SignedIn>
@@ -94,9 +89,7 @@ export default function RootLayout({
           </ConditionalHeader>
           <SignUpReloader />
           <Toaster />
-          <div className="mx-auto max-w-[980px]">
-            {children}
-          </div>
+          <div className="mx-auto max-w-[980px]">{children}</div>
         </body>
       </html>
     </ClerkProvider>

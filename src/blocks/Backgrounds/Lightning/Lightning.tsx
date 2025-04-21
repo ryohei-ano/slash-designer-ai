@@ -2,14 +2,14 @@
 	Installed from https://reactbits.dev/ts/tailwind/
 */
 
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect } from 'react'
 
 interface LightningProps {
-  hue?: number;
-  xOffset?: number;
-  speed?: number;
-  intensity?: number;
-  size?: number;
+  hue?: number
+  xOffset?: number
+  speed?: number
+  intensity?: number
+  size?: number
 }
 
 const Lightning: React.FC<LightningProps> = ({
@@ -19,23 +19,23 @@ const Lightning: React.FC<LightningProps> = ({
   intensity = 1,
   size = 1,
 }) => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
+    const canvas = canvasRef.current
+    if (!canvas) return
 
     const resizeCanvas = () => {
-      canvas.width = canvas.clientWidth;
-      canvas.height = canvas.clientHeight;
-    };
-    resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
+      canvas.width = canvas.clientWidth
+      canvas.height = canvas.clientHeight
+    }
+    resizeCanvas()
+    window.addEventListener('resize', resizeCanvas)
 
-    const gl = canvas.getContext("webgl");
+    const gl = canvas.getContext('webgl')
     if (!gl) {
-      console.error("WebGL not supported");
-      return;
+      console.error('WebGL not supported')
+      return
     }
 
     const vertexShaderSource = `
@@ -43,7 +43,7 @@ const Lightning: React.FC<LightningProps> = ({
       void main() {
         gl_Position = vec4(aPosition, 0.0, 1.0);
       }
-    `;
+    `
 
     const fragmentShaderSource = `
       precision mediump float;
@@ -129,84 +129,76 @@ const Lightning: React.FC<LightningProps> = ({
       void main() {
           mainImage(gl_FragColor, gl_FragCoord.xy);
       }
-    `;
+    `
 
-    const compileShader = (
-      source: string,
-      type: number
-    ): WebGLShader | null => {
-      const shader = gl.createShader(type);
-      if (!shader) return null;
-      gl.shaderSource(shader, source);
-      gl.compileShader(shader);
+    const compileShader = (source: string, type: number): WebGLShader | null => {
+      const shader = gl.createShader(type)
+      if (!shader) return null
+      gl.shaderSource(shader, source)
+      gl.compileShader(shader)
       if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        console.error("Shader compile error:", gl.getShaderInfoLog(shader));
-        gl.deleteShader(shader);
-        return null;
+        console.error('Shader compile error:', gl.getShaderInfoLog(shader))
+        gl.deleteShader(shader)
+        return null
       }
-      return shader;
-    };
-
-    const vertexShader = compileShader(vertexShaderSource, gl.VERTEX_SHADER);
-    const fragmentShader = compileShader(
-      fragmentShaderSource,
-      gl.FRAGMENT_SHADER
-    );
-    if (!vertexShader || !fragmentShader) return;
-
-    const program = gl.createProgram();
-    if (!program) return;
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-    gl.linkProgram(program);
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      console.error("Program linking error:", gl.getProgramInfoLog(program));
-      return;
+      return shader
     }
-    gl.useProgram(program);
 
-    const vertices = new Float32Array([
-      -1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1,
-    ]);
-    const vertexBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+    const vertexShader = compileShader(vertexShaderSource, gl.VERTEX_SHADER)
+    const fragmentShader = compileShader(fragmentShaderSource, gl.FRAGMENT_SHADER)
+    if (!vertexShader || !fragmentShader) return
 
-    const aPosition = gl.getAttribLocation(program, "aPosition");
-    gl.enableVertexAttribArray(aPosition);
-    gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0);
+    const program = gl.createProgram()
+    if (!program) return
+    gl.attachShader(program, vertexShader)
+    gl.attachShader(program, fragmentShader)
+    gl.linkProgram(program)
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error('Program linking error:', gl.getProgramInfoLog(program))
+      return
+    }
+    gl.useProgram(program)
 
-    const iResolutionLocation = gl.getUniformLocation(program, "iResolution");
-    const iTimeLocation = gl.getUniformLocation(program, "iTime");
-    const uHueLocation = gl.getUniformLocation(program, "uHue");
-    const uXOffsetLocation = gl.getUniformLocation(program, "uXOffset");
-    const uSpeedLocation = gl.getUniformLocation(program, "uSpeed");
-    const uIntensityLocation = gl.getUniformLocation(program, "uIntensity");
-    const uSizeLocation = gl.getUniformLocation(program, "uSize");
+    const vertices = new Float32Array([-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1])
+    const vertexBuffer = gl.createBuffer()
+    gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
+    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW)
 
-    const startTime = performance.now();
+    const aPosition = gl.getAttribLocation(program, 'aPosition')
+    gl.enableVertexAttribArray(aPosition)
+    gl.vertexAttribPointer(aPosition, 2, gl.FLOAT, false, 0, 0)
+
+    const iResolutionLocation = gl.getUniformLocation(program, 'iResolution')
+    const iTimeLocation = gl.getUniformLocation(program, 'iTime')
+    const uHueLocation = gl.getUniformLocation(program, 'uHue')
+    const uXOffsetLocation = gl.getUniformLocation(program, 'uXOffset')
+    const uSpeedLocation = gl.getUniformLocation(program, 'uSpeed')
+    const uIntensityLocation = gl.getUniformLocation(program, 'uIntensity')
+    const uSizeLocation = gl.getUniformLocation(program, 'uSize')
+
+    const startTime = performance.now()
     const render = () => {
-      resizeCanvas();
-      gl.viewport(0, 0, canvas.width, canvas.height);
-      gl.uniform2f(iResolutionLocation, canvas.width, canvas.height);
-      const currentTime = performance.now();
-      gl.uniform1f(iTimeLocation, (currentTime - startTime) / 1000.0);
-      gl.uniform1f(uHueLocation, hue);
-      gl.uniform1f(uXOffsetLocation, xOffset);
-      gl.uniform1f(uSpeedLocation, speed);
-      gl.uniform1f(uIntensityLocation, intensity);
-      gl.uniform1f(uSizeLocation, size);
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
-      requestAnimationFrame(render);
-    };
-    requestAnimationFrame(render);
+      resizeCanvas()
+      gl.viewport(0, 0, canvas.width, canvas.height)
+      gl.uniform2f(iResolutionLocation, canvas.width, canvas.height)
+      const currentTime = performance.now()
+      gl.uniform1f(iTimeLocation, (currentTime - startTime) / 1000.0)
+      gl.uniform1f(uHueLocation, hue)
+      gl.uniform1f(uXOffsetLocation, xOffset)
+      gl.uniform1f(uSpeedLocation, speed)
+      gl.uniform1f(uIntensityLocation, intensity)
+      gl.uniform1f(uSizeLocation, size)
+      gl.drawArrays(gl.TRIANGLES, 0, 6)
+      requestAnimationFrame(render)
+    }
+    requestAnimationFrame(render)
 
     return () => {
-      window.removeEventListener("resize", resizeCanvas);
-    };
-  }, [hue, xOffset, speed, intensity, size]);
+      window.removeEventListener('resize', resizeCanvas)
+    }
+  }, [hue, xOffset, speed, intensity, size])
 
-  return <canvas ref={canvasRef} className="w-full h-full relative" />;
-};
+  return <canvas ref={canvasRef} className="w-full h-full relative" />
+}
 
-export default Lightning;
+export default Lightning

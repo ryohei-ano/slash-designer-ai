@@ -1,4 +1,4 @@
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from '@/components/ui/skeleton'
 
 export default function ChatLoading() {
   return (
@@ -6,32 +6,34 @@ export default function ChatLoading() {
       <div className="absolute inset-0 overflow-auto scrollbar-hide">
         <div className="flex flex-col items-center">
           <div className="w-full max-w-2xl space-y-10 pb-32 pt-12 px-4">
-            {Array(5).fill(0).map((_, i) => (
-              <div
-                key={i}
-                className={`flex w-full ${i % 2 === 0 ? "justify-start" : "justify-end"}`}
-              >
-                {i % 2 === 0 ? (
-                  <div className="flex flex-col items-start">
-                    <Skeleton className="h-8 w-8 rounded-full mb-2" />
-                    <div className="rounded-lg py-3">
-                      <div className="space-y-2">
-                        <Skeleton className="h-4 w-64" />
-                        <Skeleton className="h-4 w-48" />
-                        <Skeleton className="h-4 w-56" />
+            {Array(5)
+              .fill(0)
+              .map((_, i) => (
+                <div
+                  key={i}
+                  className={`flex w-full ${i % 2 === 0 ? 'justify-start' : 'justify-end'}`}
+                >
+                  {i % 2 === 0 ? (
+                    <div className="flex flex-col items-start">
+                      <Skeleton className="h-8 w-8 rounded-full mb-2" />
+                      <div className="rounded-lg py-3">
+                        <div className="space-y-2">
+                          <Skeleton className="h-4 w-64" />
+                          <Skeleton className="h-4 w-48" />
+                          <Skeleton className="h-4 w-56" />
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ) : (
-                  <div className="flex flex-row-reverse gap-3">
-                    <Skeleton className="h-8 w-8 rounded-full" />
-                    <div className="rounded-lg p-4 bg-secondary text-black px-4">
-                      <Skeleton className="h-4 w-40" />
+                  ) : (
+                    <div className="flex flex-row-reverse gap-3">
+                      <Skeleton className="h-8 w-8 rounded-full" />
+                      <div className="rounded-lg p-4 bg-secondary text-black px-4">
+                        <Skeleton className="h-4 w-40" />
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            ))}
+                  )}
+                </div>
+              ))}
           </div>
         </div>
       </div>
@@ -42,5 +44,5 @@ export default function ChatLoading() {
         </div>
       </div>
     </div>
-  );
+  )
 }

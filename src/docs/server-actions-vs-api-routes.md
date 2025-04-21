@@ -18,23 +18,23 @@ Server Actionsは、Next.js 13以降で導入された機能で、クライア�
 ### 使用例
 
 ```typescript
-"use server"
+'use server'
 
-import { auth } from "@clerk/nextjs/server"
-import { revalidatePath } from "next/cache"
+import { auth } from '@clerk/nextjs/server'
+import { revalidatePath } from 'next/cache'
 
 export async function getUserData() {
   const { userId } = await auth()
-  
+
   if (!userId) {
-    return { success: false, error: "認証されていません" }
+    return { success: false, error: '認証されていません' }
   }
-  
+
   // データ取得処理
-  
+
   // キャッシュの更新
-  revalidatePath("/dashboard")
-  
+  revalidatePath('/dashboard')
+
   return { success: true, data }
 }
 ```
@@ -53,21 +53,18 @@ API Routesは、Next.jsの従来からある機能で、RESTful APIエンドポ�
 ### 使用例
 
 ```typescript
-import { NextResponse } from "next/server"
-import { auth } from "@clerk/nextjs/server"
+import { NextResponse } from 'next/server'
+import { auth } from '@clerk/nextjs/server'
 
 export async function GET() {
   const { userId } = await auth()
-  
+
   if (!userId) {
-    return NextResponse.json(
-      { error: "認証されていません" },
-      { status: 401 }
-    )
+    return NextResponse.json({ error: '認証されていません' }, { status: 401 })
   }
-  
+
   // データ取得処理
-  
+
   return NextResponse.json({ data })
 }
 ```

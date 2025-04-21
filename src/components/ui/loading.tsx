@@ -1,7 +1,7 @@
-"use client"
+'use client'
 
-import { useEffect, useState } from "react"
-import { LoadingSpinner } from "./loading-spinner"
+import { useEffect, useState } from 'react'
+import { LoadingSpinner } from './loading-spinner'
 
 interface LoadingProps {
   delay?: number // ミリ秒単位のディレイ（短い読み込みならスピナーを表示しない）

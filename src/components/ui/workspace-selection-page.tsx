@@ -1,48 +1,59 @@
-"use client";
+'use client'
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Workspace } from "@/app/actions/workspace";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Workspace } from '@/app/actions/workspace'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { AlertCircle } from 'lucide-react'
 
 interface WorkspaceSelectionPageProps {
-  workspaces: Workspace[];
-  error?: string;
-  isCreateMode?: boolean;
+  workspaces: Workspace[]
+  error?: string
+  isCreateMode?: boolean
 }
 
-export default function WorkspaceSelectionPage({ workspaces, error, isCreateMode }: WorkspaceSelectionPageProps) {
-  const router = useRouter();
-  const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+export default function WorkspaceSelectionPage({
+  workspaces,
+  error,
+  isCreateMode,
+}: WorkspaceSelectionPageProps) {
+  const router = useRouter()
+  const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleWorkspaceSelect = (workspaceId: string) => {
-    setSelectedWorkspace(workspaceId);
-  };
+    setSelectedWorkspace(workspaceId)
+  }
 
   const handleContinue = () => {
-    if (!selectedWorkspace) return;
-    
-    setIsLoading(true);
-    
+    if (!selectedWorkspace) return
+
+    setIsLoading(true)
+
     // 選択したワークスペースをローカルストレージに保存（次回のために）
-    localStorage.setItem("lastSelectedWorkspace", selectedWorkspace);
-    
+    localStorage.setItem('lastSelectedWorkspace', selectedWorkspace)
+
     // 選択したワークスペースのダッシュボードにリダイレクト
-    router.push(`/workspace/${selectedWorkspace}/designer`);
-  };
+    router.push(`/workspace/${selectedWorkspace}/designer`)
+  }
 
   const handleCreateNew = () => {
-    router.push("/onboarding");
-  };
+    router.push('/onboarding')
+  }
 
   return (
     <div className="container max-w-4xl mx-auto py-16 px-4">
       <h1 className="text-3xl font-bold mb-8 text-center">ワークスペースを選択</h1>
-      
+
       {error && (
         <Alert variant="destructive" className="mb-6">
           <AlertCircle className="h-4 w-4" />
@@ -50,15 +61,15 @@ export default function WorkspaceSelectionPage({ workspaces, error, isCreateMode
           <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
-      
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
         {workspaces.map((workspace) => (
-          <Card 
+          <Card
             key={workspace.id}
             className={`cursor-pointer transition-all ${
-              selectedWorkspace === workspace.id 
-                ? "border-primary ring-2 ring-primary" 
-                : "hover:border-gray-300"
+              selectedWorkspace === workspace.id
+                ? 'border-primary ring-2 ring-primary'
+                : 'hover:border-gray-300'
             }`}
             onClick={() => handleWorkspaceSelect(workspace.id)}
           >
@@ -68,7 +79,7 @@ export default function WorkspaceSelectionPage({ workspaces, error, isCreateMode
             </CardHeader>
             <CardContent>
               <p className="text-sm text-muted-foreground line-clamp-2">
-                {workspace.business_overview || "詳細情報なし"}
+                {workspace.business_overview || '詳細情報なし'}
               </p>
             </CardContent>
             <CardFooter className="flex justify-between">
@@ -82,21 +93,15 @@ export default function WorkspaceSelectionPage({ workspaces, error, isCreateMode
           </Card>
         ))}
       </div>
-      
+
       <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button 
-          variant="outline" 
-          onClick={handleCreateNew}
-        >
+        <Button variant="outline" onClick={handleCreateNew}>
           新規ワークスペース作成
         </Button>
-        <Button 
-          onClick={handleContinue} 
-          disabled={!selectedWorkspace || isLoading}
-        >
-          {isLoading ? "読み込み中..." : "選択したワークスペースに進む"}
+        <Button onClick={handleContinue} disabled={!selectedWorkspace || isLoading}>
+          {isLoading ? '読み込み中...' : '選択したワークスペースに進む'}
         </Button>
       </div>
     </div>
-  );
+  )
 }

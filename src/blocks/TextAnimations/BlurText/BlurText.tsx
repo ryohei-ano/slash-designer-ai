@@ -2,23 +2,23 @@
 	Installed from https://reactbits.dev/ts/tailwind/
 */
 
-import { useRef, useEffect, useState } from 'react';
-import { useSprings, animated, SpringValue } from '@react-spring/web';
+import { useRef, useEffect, useState } from 'react'
+import { useSprings, animated, SpringValue } from '@react-spring/web'
 
-const AnimatedSpan = animated.span as React.FC<React.HTMLAttributes<HTMLSpanElement>>;
+const AnimatedSpan = animated.span as React.FC<React.HTMLAttributes<HTMLSpanElement>>
 
 interface BlurTextProps {
-  text?: string;
-  delay?: number;
-  className?: string;
-  animateBy?: 'words' | 'letters';
-  direction?: 'top' | 'bottom';
-  threshold?: number;
-  rootMargin?: string;
-  animationFrom?: Record<string, any>;
-  animationTo?: Record<string, any>[];
-  easing?: (t: number) => number | string;
-  onAnimationComplete?: () => void;
+  text?: string
+  delay?: number
+  className?: string
+  animateBy?: 'words' | 'letters'
+  direction?: 'top' | 'bottom'
+  threshold?: number
+  rootMargin?: string
+  animationFrom?: Record<string, any>
+  animationTo?: Record<string, any>[]
+  easing?: (t: number) => number | string
+  onAnimationComplete?: () => void
 }
 
 const BlurText: React.FC<BlurTextProps> = ({
@@ -34,16 +34,17 @@ const BlurText: React.FC<BlurTextProps> = ({
   easing = 'easeOutCubic',
   onAnimationComplete,
 }) => {
-  const elements = animateBy === 'words' ? text.split(' ') : text.split('');
-  const [inView, setInView] = useState(false);
-  const ref = useRef<HTMLParagraphElement>(null);
-  const animatedCount = useRef(0);
+  const elements = animateBy === 'words' ? text.split(' ') : text.split('')
+  const [inView, setInView] = useState(false)
+  const ref = useRef<HTMLParagraphElement>(null)
+  const animatedCount = useRef(0)
 
   // Default animations based on direction
-  const defaultFrom: Record<string, any> = direction === 'top'
-    ? { filter: 'blur(10px)', opacity: 0, transform: 'translate3d(0,-50px,0)' }
-    : { filter: 'blur(10px)', opacity: 0, transform: 'translate3d(0,50px,0)' };
-  
+  const defaultFrom: Record<string, any> =
+    direction === 'top'
+      ? { filter: 'blur(10px)', opacity: 0, transform: 'translate3d(0,-50px,0)' }
+      : { filter: 'blur(10px)', opacity: 0, transform: 'translate3d(0,50px,0)' }
+
   const defaultTo: Record<string, any>[] = [
     {
       filter: 'blur(5px)',
@@ -51,27 +52,27 @@ const BlurText: React.FC<BlurTextProps> = ({
       transform: direction === 'top' ? 'translate3d(0,5px,0)' : 'translate3d(0,-5px,0)',
     },
     { filter: 'blur(0px)', opacity: 1, transform: 'translate3d(0,0,0)' },
-  ];
+  ]
 
   useEffect(() => {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          setInView(true);
+          setInView(true)
           if (ref.current) {
-            observer.unobserve(ref.current);
+            observer.unobserve(ref.current)
           }
         }
       },
       { threshold, rootMargin }
-    );
+    )
 
     if (ref.current) {
-      observer.observe(ref.current);
+      observer.observe(ref.current)
     }
 
-    return () => observer.disconnect();
-  }, [threshold, rootMargin]);
+    return () => observer.disconnect()
+  }, [threshold, rootMargin])
 
   const springs = useSprings(
     elements.length,
@@ -79,19 +80,19 @@ const BlurText: React.FC<BlurTextProps> = ({
       from: animationFrom || defaultFrom,
       to: inView
         ? async (next: (arg: Record<string, SpringValue<any>>) => Promise<void>) => {
-          for (const step of animationTo || defaultTo) {
-            await next(step);
+            for (const step of animationTo || defaultTo) {
+              await next(step)
+            }
+            animatedCount.current += 1
+            if (animatedCount.current === elements.length && onAnimationComplete) {
+              onAnimationComplete()
+            }
           }
-          animatedCount.current += 1;
-          if (animatedCount.current === elements.length && onAnimationComplete) {
-            onAnimationComplete();
-          }
-        }
         : animationFrom || defaultFrom,
       delay: i * delay,
       config: { easing: easing as any },
     }))
-  );
+  )
 
   return (
     <p ref={ref} className={`blur-text ${className} flex flex-wrap`}>
@@ -106,7 +107,7 @@ const BlurText: React.FC<BlurTextProps> = ({
         </AnimatedSpan>
       ))}
     </p>
-  );
-};
+  )
+}
 
-export default BlurText;
+export default BlurText

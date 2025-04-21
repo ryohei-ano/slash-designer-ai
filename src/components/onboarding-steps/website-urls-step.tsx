@@ -1,26 +1,26 @@
-"use client"
+'use client'
 
-import React from "react"
-import { useFormContext, useFieldArray } from "react-hook-form"
-import { FormField, FormItem, FormControl, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { PlusCircle, X } from "lucide-react"
-import { OnboardingFormValues } from "../ui/onboarding-flow"
+import React from 'react'
+import { useFormContext, useFieldArray } from 'react-hook-form'
+import { FormField, FormItem, FormControl, FormMessage } from '@/components/ui/form'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { PlusCircle, X } from 'lucide-react'
+import { OnboardingFormValues } from '../ui/onboarding-flow'
 
 export default function WebsiteUrlsStep() {
   const form = useFormContext<OnboardingFormValues>()
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "urls",
+    name: 'urls',
   })
 
   // Ensure the first field has https:// if it's empty
   React.useEffect(() => {
     const firstField = fields[0]
     if (firstField && !firstField.url) {
-      form.setValue(`urls.0.url`, "https://")
+      form.setValue(`urls.0.url`, 'https://')
     }
   }, [fields, form])
 
@@ -28,7 +28,9 @@ export default function WebsiteUrlsStep() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold">ウェブサイト・SNS</h2>
-        <p className="text-muted-foreground">ウェブサイトやSNS、採用ページのURLを入力してください</p>
+        <p className="text-muted-foreground">
+          ウェブサイトやSNS、採用ページのURLを入力してください
+        </p>
       </div>
 
       <div className="space-y-4">
@@ -40,9 +42,9 @@ export default function WebsiteUrlsStep() {
               render={({ field }) => {
                 // Ensure the value always starts with https://
                 const ensureHttps = (value: string) => {
-                  if (!value) return "https://"
-                  if (!value.startsWith("https://")) {
-                    return "https://" + value.replace(/^https?:\/\//, "")
+                  if (!value) return 'https://'
+                  if (!value.startsWith('https://')) {
+                    return 'https://' + value.replace(/^https?:\/\//, '')
                   }
                   return value
                 }
@@ -65,12 +67,12 @@ export default function WebsiteUrlsStep() {
                         <div className="bg-muted px-2 p-1 ml-1 text-sm rounded-sm text-muted-foreground">
                           https://
                         </div>
-                        <Input 
+                        <Input
                           className="border-0 pl-2 focus-visible:ring-0 focus-visible:border-0"
-                          placeholder="example.com" 
-                          value={field.value.replace(/^https:\/\//, "")}
+                          placeholder="example.com"
+                          value={field.value.replace(/^https:\/\//, '')}
                           onChange={(e) => {
-                            field.onChange("https://" + e.target.value.replace(/^https?:\/\//, ""))
+                            field.onChange('https://' + e.target.value.replace(/^https?:\/\//, ''))
                           }}
                           onBlur={handleBlur}
                         />
@@ -90,7 +92,13 @@ export default function WebsiteUrlsStep() {
         ))}
       </div>
 
-      <Button type="button" variant="outline" size="sm" className="mt-2" onClick={() => append({ url: "https://" })}>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="mt-2"
+        onClick={() => append({ url: 'https://' })}
+      >
         <PlusCircle className="mr-2 h-4 w-4" />
         URLを追加
       </Button>
