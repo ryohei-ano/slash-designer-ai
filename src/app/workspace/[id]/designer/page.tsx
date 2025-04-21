@@ -7,8 +7,13 @@ export const metadata: Metadata = {
   description: 'AIアシスタントにデザイン依頼を行えます。',
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export default function DesignerPage({ params }: { params: { id: string } }) {
+export default function DesignerPage({
+  params,
+  searchParams,
+}: {
+  params: { id: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+}) {
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex flex-col gap-2">
