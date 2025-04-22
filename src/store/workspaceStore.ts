@@ -48,11 +48,14 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             return
           }
 
-          set({ workspaces: result.workspaces, isLoading: false })
+          // 現在のワークスペースの状態を取得
+          const { currentWorkspace } = get()
+          
+          // 取得したワークスペース一覧を設定
+          set({ workspaces: result.workspaces })
 
           // 現在のワークスペースが設定されていない場合、または
           // 現在のワークスペースが取得したワークスペース一覧に存在しない場合
-          const { currentWorkspace } = get()
           if (!currentWorkspace || !result.workspaces.some((w) => w.id === currentWorkspace.id)) {
             // ローカルストレージから最後に選択したワークスペースIDを取得
             const lastSelectedId = localStorage.getItem('lastSelectedWorkspace')
@@ -60,14 +63,24 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             if (lastSelectedId) {
               const lastWorkspace = result.workspaces.find((w) => w.id === lastSelectedId)
               if (lastWorkspace) {
-                set({ currentWorkspace: lastWorkspace })
+                set({ currentWorkspace: lastWorkspace, isLoading: false })
                 return
               }
             }
 
             // 上記に該当しない場合は最初のワークスペースを使用（存在する場合）
             if (result.workspaces.length > 0) {
-              set({ currentWorkspace: result.workspaces[0] })
+              set({ currentWorkspace: result.workspaces[0], isLoading: false })
+            } else {
+              set({ isLoading: false })
+            }
+          } else {
+            // 現在のワークスペースが有効な場合、最新の情報で更新
+            const updatedCurrentWorkspace = result.workspaces.find((w) => w.id === currentWorkspace.id)
+            if (updatedCurrentWorkspace) {
+              set({ currentWorkspace: updatedCurrentWorkspace, isLoading: false })
+            } else {
+              set({ isLoading: false })
             }
           }
         } catch (error) {

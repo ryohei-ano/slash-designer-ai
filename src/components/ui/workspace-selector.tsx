@@ -44,23 +44,17 @@ export function WorkspaceSelector() {
 
     // ワークスペース一覧を取得
     fetchWorkspaces(user.id)
+  }, [user, isLoaded, fetchWorkspaces])
 
-    // URLからワークスペースIDが指定されている場合
-    if (workspaceIdFromUrl && workspaces.length > 0) {
+  // URLからワークスペースIDが指定されている場合、ワークスペースが読み込まれた後に切り替え
+  useEffect(() => {
+    if (workspaceIdFromUrl && workspaces.length > 0 && !isLoading) {
       const workspaceFromUrl = workspaces.find((w) => w.id === workspaceIdFromUrl)
       if (workspaceFromUrl) {
         switchWorkspace(workspaceFromUrl)
       }
     }
-  }, [
-    user,
-    isLoaded,
-    fetchWorkspaces,
-    workspaceIdFromUrl,
-    workspaces.length,
-    switchWorkspace,
-    workspaces,
-  ])
+  }, [workspaceIdFromUrl, workspaces, isLoading, switchWorkspace])
 
   // ワークスペースを切り替えてページ遷移
   const handleSwitchWorkspace = (workspace: Workspace) => {
