@@ -103,7 +103,7 @@ export const revalidate = 0
 export default async function TaskDetailPage({
   params,
 }: {
-  params: { id: string; taskId: string }
+  params: Promise<{ id: string; taskId: string }>
 }) {
   const { userId } = await auth()
 
@@ -111,8 +111,7 @@ export default async function TaskDetailPage({
     redirect('/sign-in')
   }
 
-  const workspaceId = params.id
-  const taskIdStr = params.taskId
+  const { id: workspaceId, taskId: taskIdStr } = await params
 
   // デバッグログ
   console.log('ページパラメータ:', { workspaceId, taskIdStr })

@@ -8,7 +8,7 @@ export default async function WorkspaceIdLayout({
   params,
 }: {
   children: ReactNode
-  params: { id: string }
+  params: Promise<{ id: string }>
 }) {
   const { userId } = await auth()
 
@@ -16,7 +16,7 @@ export default async function WorkspaceIdLayout({
     redirect('/sign-in')
   }
 
-  const workspaceId = params.id
+  const { id: workspaceId } = await params
 
   try {
     // ユーザーのワークスペース情報を取得

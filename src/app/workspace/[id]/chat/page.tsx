@@ -10,14 +10,14 @@ export const metadata: Metadata = {
   description: 'ワークスペースに関する質問ができます。',
 }
 
-export default async function ChatPage({ params }: { params: { id: string } }) {
+export default async function ChatPage({ params }: { params: Promise<{ id: string }> }) {
   const { userId } = await auth()
 
   if (!userId) {
     redirect('/sign-in')
   }
 
-  const workspaceId = params.id
+  const { id: workspaceId } = await params
 
   // ユーザーのワークスペース情報を取得
   const { workspaces, error } = await getUserWorkspaces(userId)

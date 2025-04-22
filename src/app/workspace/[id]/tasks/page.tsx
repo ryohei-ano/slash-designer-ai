@@ -9,14 +9,14 @@ export const metadata: Metadata = {
   description: 'デザイン依頼のタスク一覧を確認できます。',
 }
 
-export default async function TasksPage({ params }: { params: { id: string } }) {
+export default async function TasksPage({ params }: { params: Promise<{ id: string }> }) {
   const { userId } = await auth()
 
   if (!userId) {
     redirect('/sign-in')
   }
 
-  const workspaceId = params.id
+  const { id: workspaceId } = await params
 
   return (
     <div className="container mx-auto py-6 space-y-6">

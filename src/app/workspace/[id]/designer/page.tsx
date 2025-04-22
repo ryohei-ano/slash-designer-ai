@@ -7,13 +7,9 @@ export const metadata: Metadata = {
   description: 'AIアシスタントにデザイン依頼を行えます。',
 }
 
-export default function DesignerPage({
-  params,
-  searchParams,
-}: {
-  params: { id: string }
-  searchParams: { [key: string]: string | string[] | undefined }
-}) {
+export default async function DesignerPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+
   return (
     <div className="container mx-auto py-6 space-y-6">
       <div className="flex flex-col gap-2">
