@@ -5,6 +5,9 @@ import { Button } from '@/components/ui/button'
 import Image from 'next/image'
 import Link from 'next/link'
 
+// 動的レンダリングを強制する
+export const dynamic = 'force-dynamic'
+
 export default async function HomePage() {
   // 認証状態を取得（try-catchで囲んで例外処理）
   let userId: string | null = null
