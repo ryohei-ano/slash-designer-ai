@@ -50,7 +50,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
 
           // 現在のワークスペースの状態を取得
           const { currentWorkspace } = get()
-          
+
           // 取得したワークスペース一覧を設定
           set({ workspaces: result.workspaces })
 
@@ -76,7 +76,9 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             }
           } else {
             // 現在のワークスペースが有効な場合、最新の情報で更新
-            const updatedCurrentWorkspace = result.workspaces.find((w) => w.id === currentWorkspace.id)
+            const updatedCurrentWorkspace = result.workspaces.find(
+              (w) => w.id === currentWorkspace.id
+            )
             if (updatedCurrentWorkspace) {
               set({ currentWorkspace: updatedCurrentWorkspace, isLoading: false })
             } else {
