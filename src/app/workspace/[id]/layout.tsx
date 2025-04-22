@@ -2,6 +2,40 @@ import { ReactNode } from 'react'
 import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { getUserWorkspaces } from '@/app/actions/workspace'
+import { cache } from 'react'
+
+// ワークスペース情報を取得する関数をキャッシュ
+const getWorkspaceInfo = cache(async (userId: string, workspaceId: string) => {
+  try {
+    // ユーザーのワークスペース情報を取得
+    const { workspaces, error } = await getUserWorkspaces(userId)
+
+    if (error || workspaces.length === 0) {
+      return { redirect: '/onboarding' }
+    }
+
+    // 指定されたIDのワークスペースを検索
+    const currentWorkspace = workspaces.find((w) => w.id === workspaceId)
+
+    // 指定されたワークスペースが見つからない場合
+    if (!currentWorkspace) {
+      // 複数のワークスペースがある場合は選択画面にリダイレクト
+      if (workspaces.length > 1) {
+        return { redirect: '/workspace/select' }
+      }
+      // 1つだけの場合はそのワークスペースのページにリダイレクト
+      else {
+        return { redirect: `/workspace/${workspaces[0].id}/designer` }
+      }
+    }
+
+    return { currentWorkspace }
+  } catch (error) {
+    console.error('ワークスペース初期化中にエラーが発生しました:', error)
+    // エラーが発生した場合でも、ワークスペースを表示
+    return { error }
+  }
+})
 
 export default async function WorkspaceIdLayout({
   children,
@@ -18,31 +52,12 @@ export default async function WorkspaceIdLayout({
 
   const { id: workspaceId } = await params
 
-  try {
-    // ユーザーのワークスペース情報を取得
-    const { workspaces, error } = await getUserWorkspaces(userId)
+  // キャッシュされた関数を使用してワークスペース情報を取得
+  const result = await getWorkspaceInfo(userId, workspaceId)
 
-    if (error || workspaces.length === 0) {
-      redirect('/onboarding')
-    }
-
-    // 指定されたIDのワークスペースを検索
-    const currentWorkspace = workspaces.find((w) => w.id === workspaceId)
-
-    // 指定されたワークスペースが見つからない場合
-    if (!currentWorkspace) {
-      // 複数のワークスペースがある場合は選択画面にリダイレクト
-      if (workspaces.length > 1) {
-        redirect('/workspace/select')
-      }
-      // 1つだけの場合はそのワークスペースのページにリダイレクト
-      else {
-        redirect(`/workspace/${workspaces[0].id}/designer`)
-      }
-    }
-  } catch (error) {
-    console.error('ワークスペース初期化中にエラーが発生しました:', error)
-    // エラーが発生した場合でも、ワークスペースを表示
+  // リダイレクトが必要な場合
+  if (result.redirect) {
+    redirect(result.redirect)
   }
 
   return (

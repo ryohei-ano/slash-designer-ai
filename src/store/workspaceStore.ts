@@ -39,6 +39,12 @@ export const useWorkspaceStore = create<WorkspaceState>()(
 
       // ワークスペース一覧を取得するアクション
       fetchWorkspaces: async (userId: string) => {
+        // すでにワークスペースが読み込まれている場合は再取得しない
+        const { workspaces, isLoading } = get()
+        if (workspaces.length > 0 && !isLoading) {
+          return
+        }
+
         set({ isLoading: true, error: null })
         try {
           const result = await getUserWorkspaces(userId)

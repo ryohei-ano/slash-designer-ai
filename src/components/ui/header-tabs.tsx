@@ -2,18 +2,31 @@
 
 import { usePathname } from 'next/navigation'
 import { WorkspaceTabs } from './workspace-tabs'
+import { memo, useMemo } from 'react'
 
-export function HeaderTabs() {
+// メモ化したHeaderTabsコンポーネント
+export const HeaderTabs = memo(() => {
   const pathname = usePathname()
-  const isWorkspacePage = pathname?.startsWith('/workspace')
 
-  // パスからワークスペースIDを抽出
-  const workspaceIdMatch = pathname?.match(/\/workspace\/([^\/]+)/)
-  const workspaceId = workspaceIdMatch ? workspaceIdMatch[1] : undefined
+  // パスからワークスペースIDを抽出（メモ化）
+  const workspaceInfo = useMemo(() => {
+    const isWorkspacePage = pathname?.startsWith('/workspace')
 
-  if (!isWorkspacePage || !workspaceId) {
+    if (!isWorkspacePage) {
+      return { isWorkspacePage: false }
+    }
+
+    const workspaceIdMatch = pathname?.match(/\/workspace\/([^\/]+)/)
+    const workspaceId = workspaceIdMatch ? workspaceIdMatch[1] : undefined
+
+    return { isWorkspacePage, workspaceId }
+  }, [pathname])
+
+  // ワークスペースページでない、またはIDが取得できない場合は何も表示しない
+  if (!workspaceInfo.isWorkspacePage || !workspaceInfo.workspaceId) {
     return null
   }
 
-  return <WorkspaceTabs workspaceId={workspaceId} />
-}
+  return <WorkspaceTabs workspaceId={workspaceInfo.workspaceId} />
+})
+HeaderTabs.displayName = 'HeaderTabs'

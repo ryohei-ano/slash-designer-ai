@@ -20,6 +20,10 @@ export type Workspace = {
   created_at: string
 }
 
+// キャッシュマップ（メモリキャッシュ）
+const workspaceCache = new Map<string, { workspaces: Workspace[]; timestamp: number }>()
+const CACHE_TTL = 60 * 1000 // 60秒のキャッシュ有効期間
+
 /**
  * ユーザーのワークスペース一覧を取得する
  */
@@ -33,36 +37,55 @@ export async function getUserWorkspaces(
       return { workspaces: [], error: '認証エラー: ユーザーIDが一致しません' }
     }
 
-    // ユーザーのワークスペース一覧を取得
-    const { data: userWorkspaces, error: userWorkspacesError } = await supabaseAdmin
-      .from('user_workspaces')
-      .select('workspace_id')
-      .eq('user_id', userId)
-
-    if (userWorkspacesError) {
-      console.error('Error fetching user workspaces:', userWorkspacesError)
-      return { workspaces: [], error: `ワークスペース取得エラー: ${userWorkspacesError.message}` }
+    // キャッシュをチェック
+    const cachedData = workspaceCache.get(userId)
+    const now = Date.now()
+    if (cachedData && now - cachedData.timestamp < CACHE_TTL) {
+      return { workspaces: cachedData.workspaces }
     }
 
-    if (!userWorkspaces || userWorkspaces.length === 0) {
+    // 1回のクエリでワークスペース情報を取得（結合クエリ）
+    const { data, error } = await supabaseAdmin
+      .from('user_workspaces')
+      .select(
+        `
+        workspace_id,
+        workspaces:workspace_id(*)
+      `
+      )
+      .eq('user_id', userId)
+
+    if (error) {
+      console.error('Error fetching user workspaces:', error)
+      return { workspaces: [], error: `ワークスペース取得エラー: ${error.message}` }
+    }
+
+    if (!data || data.length === 0) {
       return { workspaces: [] }
     }
 
-    // ワークスペースIDの配列を作成
-    const workspaceIds = userWorkspaces.map((uw) => uw.workspace_id)
+    // 結果を整形
+    const workspaces = data
+      .map((item) => {
+        // 型安全に変換
+        const workspace = item.workspaces as unknown
+        if (
+          workspace &&
+          typeof workspace === 'object' &&
+          'id' in workspace &&
+          'name' in workspace &&
+          'industry' in workspace
+        ) {
+          return workspace as Workspace
+        }
+        return null
+      })
+      .filter(Boolean) as Workspace[] // nullやundefinedを除外
 
-    // ワークスペース情報を取得
-    const { data: workspaces, error: workspacesError } = await supabaseAdmin
-      .from('workspaces')
-      .select('*')
-      .in('id', workspaceIds)
+    // キャッシュに保存
+    workspaceCache.set(userId, { workspaces, timestamp: now })
 
-    if (workspacesError) {
-      console.error('Error fetching workspaces:', workspacesError)
-      return { workspaces: [], error: `ワークスペース情報取得エラー: ${workspacesError.message}` }
-    }
-
-    return { workspaces: workspaces || [] }
+    return { workspaces }
   } catch (error) {
     console.error('Unexpected error in getUserWorkspaces:', error)
     const errorMessage = error instanceof Error ? error.message : '不明なエラーが発生しました'

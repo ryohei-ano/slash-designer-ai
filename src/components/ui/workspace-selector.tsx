@@ -38,11 +38,11 @@ export function WorkspaceSelector() {
   // URLからワークスペースIDを取得
   const workspaceIdFromUrl = searchParams.get('workspace')
 
-  // ユーザーのワークスペースを取得
+  // ユーザーのワークスペースを取得（初回のみ）
   useEffect(() => {
     if (!isLoaded || !user) return
 
-    // ワークスペース一覧を取得
+    // ワークスペース一覧を取得（fetchWorkspaces内で既に取得済みの場合はスキップする）
     fetchWorkspaces(user.id)
   }, [user, isLoaded, fetchWorkspaces])
 
