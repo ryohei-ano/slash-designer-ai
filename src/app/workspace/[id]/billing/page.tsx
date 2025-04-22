@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 }
 
 export default async function BillingPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+  const { id: _id } = await params
 
   const { userId } = await auth()
 

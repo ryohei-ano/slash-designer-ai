@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 }
 
 export default async function DesignerPage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+  const { id: _id } = await params
 
   return (
     <div className="container mx-auto py-6 space-y-6">

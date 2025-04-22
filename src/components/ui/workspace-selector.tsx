@@ -21,79 +21,50 @@ import {
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 import { ChevronDown, Plus } from 'lucide-react'
-import { Workspace, getUserWorkspaces } from '@/app/actions/workspace'
+import { Workspace } from '@/app/actions/workspace'
 import { WorkspaceEditForm } from './workspace-edit-form'
+import { useWorkspaceStore } from '@/store/workspaceStore'
 
 export function WorkspaceSelector() {
   const { user, isLoaded } = useUser()
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [workspaces, setWorkspaces] = useState<Workspace[]>([])
-  const [currentWorkspace, setCurrentWorkspace] = useState<Workspace | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
+
+  // Zustandストアから状態とアクションを取得
+  const { workspaces, currentWorkspace, isLoading, error, fetchWorkspaces, switchWorkspace } =
+    useWorkspaceStore()
 
   // URLからワークスペースIDを取得
   const workspaceIdFromUrl = searchParams.get('workspace')
 
   // ユーザーのワークスペースを取得
   useEffect(() => {
-    async function fetchWorkspaces() {
-      if (!isLoaded || !user) return
+    if (!isLoaded || !user) return
 
-      setIsLoading(true)
-      try {
-        const result = await getUserWorkspaces(user.id)
-        if (result.error) {
-          setError(result.error)
-        } else if (result.workspaces.length > 0) {
-          setWorkspaces(result.workspaces)
+    // ワークスペース一覧を取得
+    fetchWorkspaces(user.id)
 
-          // URLからワークスペースIDが指定されている場合はそれを使用
-          if (workspaceIdFromUrl) {
-            const workspaceFromUrl = result.workspaces.find((w) => w.id === workspaceIdFromUrl)
-            if (workspaceFromUrl) {
-              setCurrentWorkspace(workspaceFromUrl)
-              // 最後に選択したワークスペースとして保存
-              localStorage.setItem('lastSelectedWorkspace', workspaceFromUrl.id)
-              return
-            }
-          }
-
-          // ローカルストレージから最後に選択したワークスペースIDを取得
-          const lastSelectedId = localStorage.getItem('lastSelectedWorkspace')
-          if (lastSelectedId) {
-            const lastWorkspace = result.workspaces.find((w) => w.id === lastSelectedId)
-            if (lastWorkspace) {
-              setCurrentWorkspace(lastWorkspace)
-              return
-            }
-          }
-
-          // 上記に該当しない場合は最初のワークスペースを使用
-          setCurrentWorkspace(result.workspaces[0])
-        } else {
-          setError('ワークスペースが見つかりません')
-        }
-      } catch (err) {
-        setError('ワークスペース情報の取得に失敗しました')
-        console.error(err)
-      } finally {
-        setIsLoading(false)
+    // URLからワークスペースIDが指定されている場合
+    if (workspaceIdFromUrl && workspaces.length > 0) {
+      const workspaceFromUrl = workspaces.find((w) => w.id === workspaceIdFromUrl)
+      if (workspaceFromUrl) {
+        switchWorkspace(workspaceFromUrl)
       }
     }
+  }, [
+    user,
+    isLoaded,
+    fetchWorkspaces,
+    workspaceIdFromUrl,
+    workspaces.length,
+    switchWorkspace,
+    workspaces,
+  ])
 
-    fetchWorkspaces()
-  }, [user, isLoaded, workspaceIdFromUrl])
-
-  // ワークスペースを切り替える
-  const switchWorkspace = (workspace: Workspace) => {
-    // 最後に選択したワークスペースとして保存
-    localStorage.setItem('lastSelectedWorkspace', workspace.id)
-
-    // 現在のワークスペースを更新
-    setCurrentWorkspace(workspace)
+  // ワークスペースを切り替えてページ遷移
+  const handleSwitchWorkspace = (workspace: Workspace) => {
+    switchWorkspace(workspace)
 
     // 新しいワークスペースページに遷移
     router.push(`/workspace/${workspace.id}/designer`)
@@ -168,7 +139,10 @@ export function WorkspaceSelector() {
               {workspaces
                 .filter((workspace) => workspace.id !== currentWorkspace.id)
                 .map((workspace) => (
-                  <DropdownMenuItem key={workspace.id} onClick={() => switchWorkspace(workspace)}>
+                  <DropdownMenuItem
+                    key={workspace.id}
+                    onClick={() => handleSwitchWorkspace(workspace)}
+                  >
                     {workspace.name}
                   </DropdownMenuItem>
                 ))}
@@ -218,12 +192,9 @@ export function WorkspaceSelector() {
           <div className="py-6">
             <WorkspaceEditForm
               workspace={currentWorkspace}
-              onWorkspaceUpdate={(updatedWorkspace) => {
-                setCurrentWorkspace(updatedWorkspace)
-                // ワークスペースリストも更新
-                setWorkspaces((prev) =>
-                  prev.map((w) => (w.id === updatedWorkspace.id ? updatedWorkspace : w))
-                )
+              onWorkspaceUpdate={(_updatedWorkspace) => {
+                // Zustandストアを通じて更新されるため、ここでの更新は不要
+                setIsEditDialogOpen(false)
               }}
             />
           </div>

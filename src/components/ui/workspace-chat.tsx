@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, FormEvent, useRef, useEffect } from 'react'
+import { FormEvent, useRef, useEffect, useState, useMemo } from 'react'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
@@ -8,30 +8,7 @@ import { useToast } from '@/components/ui/use-toast'
 import { Loader2, ArrowUp } from 'lucide-react'
 import { useUser } from '@clerk/nextjs'
 import ReactMarkdown from 'react-markdown'
-
-// localStorageキーのベース名
-const STORAGE_KEY_BASE = 'workspace_chat_data'
-
-// ユーザー・ワークスペース固有のlocalStorageキーを生成する関数
-const getStorageKey = (userId: string | null | undefined, workspaceId: string): string => {
-  return userId
-    ? `${STORAGE_KEY_BASE}_${userId}_${workspaceId}`
-    : `${STORAGE_KEY_BASE}_${workspaceId}`
-}
-
-// メッセージの型定義
-type Message = {
-  id: string
-  role: 'user' | 'assistant'
-  content: string
-}
-
-// 保存データの型定義
-interface StoredChatData {
-  messages: Message[]
-  inputValue: string
-  conversationId?: string
-}
+import { useChatStore, Message } from '@/store/chatStore'
 
 interface WorkspaceChatProps {
   workspaceId: string
@@ -39,73 +16,62 @@ interface WorkspaceChatProps {
 }
 
 export default function WorkspaceChat({ workspaceId, workspaceName }: WorkspaceChatProps) {
-  const [messages, setMessages] = useState<Message[]>([])
-  const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [conversationId, setConversationId] = useState<string | undefined>(undefined)
-  const [isSendingTypingIndicator, setIsSendingTypingIndicator] = useState(false)
   const [isComposing, setIsComposing] = useState(false)
-  const [isStreaming, setIsStreaming] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const { toast } = useToast()
   const { user } = useUser()
 
-  // ユーザー・ワークスペース固有のストレージキー
-  const storageKey = getStorageKey(user?.id, workspaceId)
+  // Zustandストアから状態とアクションを取得
+  const {
+    messages: allMessages,
+    inputValues,
+    conversationIds,
+    isLoading,
+    isStreaming,
+    isSendingTypingIndicator,
+    setMessages,
+    addMessage,
+    updateLastMessage,
+    setInput,
+    setConversationId,
+    setIsLoading,
+    setIsStreaming,
+    setIsSendingTypingIndicator,
+    setError,
+    clearChat,
+    getChatId,
+  } = useChatStore()
 
-  // 保存データを復元
+  // 現在のチャットID
+  const chatId = getChatId(user?.id, workspaceId, 'workspace')
+
+  // 現在のチャットのメッセージと入力値
+  const messages = useMemo(() => allMessages[chatId] || [], [allMessages, chatId])
+  const input = inputValues[chatId] || ''
+  const conversationId = conversationIds[chatId]
+
+  // 初期メッセージの表示
   useEffect(() => {
     // ユーザー情報がロードされるまで待機
     if (!user) return
 
-    try {
-      const savedData = localStorage.getItem(storageKey)
-      if (savedData) {
-        const parsedData: StoredChatData = JSON.parse(savedData)
-        // 保存されたメッセージがある場合のみ復元
-        if (parsedData.messages && parsedData.messages.length > 0) {
-          setMessages(parsedData.messages)
-          setInput(parsedData.inputValue || '')
-          setConversationId(parsedData.conversationId)
-          // ウェルカムメッセージは既に表示されているため、初期表示は不要
-          return
-        }
-      }
+    // 保存されたメッセージがある場合は表示しない
+    if (messages.length > 0) return
 
-      // 保存データがなければウェルカムメッセージを表示
-      setIsSendingTypingIndicator(true)
-      setTimeout(() => {
-        setMessages([
-          {
-            id: 'welcome',
-            role: 'assistant',
-            content: `こんにちは！${workspaceName || 'ワークスペース'}のデザインアシスタントを務めさせていただきます、mocaです✨ デザインに関する質問やご依頼があればお気軽にどうぞ。`,
-          },
-        ])
-        setIsSendingTypingIndicator(false)
-      }, 1000)
-    } catch (error) {
-      console.error('保存データの読み込みエラー:', error)
-    }
-  }, [user, storageKey, workspaceName])
-
-  // データ変更時に保存
-  useEffect(() => {
-    // 初期ロード時またはユーザーがロードされていない場合は保存しない
-    if (messages.length === 0 || !user) return
-
-    try {
-      const dataToSave: StoredChatData = {
-        messages,
-        inputValue: input,
-        conversationId,
-      }
-      localStorage.setItem(storageKey, JSON.stringify(dataToSave))
-    } catch (error) {
-      console.error('データ保存エラー:', error)
-    }
-  }, [messages, input, conversationId, user, storageKey])
+    // ウェルカムメッセージを表示
+    setIsSendingTypingIndicator(true)
+    setTimeout(() => {
+      setMessages(chatId, [
+        {
+          id: 'welcome',
+          role: 'assistant',
+          content: `こんにちは！${workspaceName || 'ワークスペース'}のデザインアシスタントを務めさせていただきます、mocaです✨ デザインに関する質問やご依頼があればお気軽にどうぞ。`,
+        },
+      ])
+      setIsSendingTypingIndicator(false)
+    }, 1000)
+  }, [user, chatId, messages.length, workspaceName, setMessages, setIsSendingTypingIndicator])
 
   // メッセージが追加されたらスクロール
   useEffect(() => {
@@ -134,8 +100,9 @@ export default function WorkspaceChat({ workspaceId, workspaceName }: WorkspaceC
       content: input.trim(),
     }
 
-    setMessages((prev) => [...prev, userMessage])
-    setInput('')
+    // ユーザーメッセージを追加
+    addMessage(chatId, userMessage)
+    setInput(chatId, '')
     setIsLoading(true)
 
     // テキストエリアの高さをリセット
@@ -169,7 +136,7 @@ export default function WorkspaceChat({ workspaceId, workspaceName }: WorkspaceC
       // 会話IDを取得
       const newConversationId = response.headers.get('x-conversation-id')
       if (newConversationId) {
-        setConversationId(newConversationId)
+        setConversationId(chatId, newConversationId)
       }
 
       const reader = response.body?.getReader()
@@ -181,7 +148,8 @@ export default function WorkspaceChat({ workspaceId, workspaceName }: WorkspaceC
         content: '',
       }
 
-      setMessages((prev) => [...prev, aiMessage])
+      // AIメッセージを追加
+      addMessage(chatId, aiMessage)
       setIsStreaming(true)
 
       const decoder = new TextDecoder()
@@ -194,16 +162,8 @@ export default function WorkspaceChat({ workspaceId, workspaceName }: WorkspaceC
         if (value) {
           const text = decoder.decode(value)
 
-          setMessages((prevMessages) => {
-            const lastMessage = prevMessages[prevMessages.length - 1]
-            if (lastMessage.role === 'assistant') {
-              return [
-                ...prevMessages.slice(0, -1),
-                { ...lastMessage, content: lastMessage.content + text },
-              ]
-            }
-            return prevMessages
-          })
+          // 最後のメッセージを更新
+          updateLastMessage(chatId, messages[messages.length - 1].content + text)
         }
       }
 
@@ -213,14 +173,14 @@ export default function WorkspaceChat({ workspaceId, workspaceName }: WorkspaceC
       setIsSendingTypingIndicator(false)
       setIsStreaming(false)
 
-      setMessages((prev) => [
-        ...prev,
-        {
-          id: (Date.now() + 1).toString(),
-          role: 'assistant',
-          content: '申し訳ありません、エラーが発生しました。もう一度お試しください。',
-        },
-      ])
+      // エラーメッセージを追加
+      addMessage(chatId, {
+        id: (Date.now() + 1).toString(),
+        role: 'assistant',
+        content: '申し訳ありません、エラーが発生しました。もう一度お試しください。',
+      })
+
+      setError(error instanceof Error ? error.message : 'チャット処理中にエラーが発生しました')
 
       toast({
         title: 'エラーが発生しました',
@@ -245,17 +205,16 @@ export default function WorkspaceChat({ workspaceId, workspaceName }: WorkspaceC
 
   // 会話をクリア
   const clearConversation = () => {
-    localStorage.removeItem(storageKey)
-    setMessages([
+    clearChat(chatId)
+
+    // ウェルカムメッセージを表示
+    setMessages(chatId, [
       {
         id: 'welcome',
         role: 'assistant',
         content: `こんにちは！${workspaceName || 'ワークスペース'}様のデザインアシスタントを務めます、Mocaです👋 デザインに関する質問があればお気軽にどうぞ。`,
       },
     ])
-    setInput('')
-    setConversationId(undefined)
-    setIsStreaming(false)
   }
 
   return (
@@ -282,15 +241,17 @@ export default function WorkspaceChat({ workspaceId, workspaceName }: WorkspaceC
                 >
                   {message.role === 'user' ? (
                     <div className="flex flex-row-reverse gap-3">
-                      <Avatar className="h-8 w-8">
-                        {user?.imageUrl ? (
-                          <AvatarImage src={user.imageUrl} alt={user.firstName || 'ユーザー'} />
-                        ) : (
-                          <AvatarFallback className="bg-primary text-primary-foreground">
-                            {user?.firstName?.[0] || 'U'}
-                          </AvatarFallback>
-                        )}
-                      </Avatar>
+                      {
+                        <Avatar className="h-8 w-8">
+                          {user?.imageUrl ? (
+                            <AvatarImage src={user.imageUrl} alt={user.firstName || 'ユーザー'} />
+                          ) : (
+                            <AvatarFallback className="bg-primary text-primary-foreground">
+                              {user?.firstName?.[0] || 'U'}
+                            </AvatarFallback>
+                          )}
+                        </Avatar>
+                      }
                       <div className="rounded-lg p-4 bg-secondary text-black px-4">
                         <p className="text-base whitespace-pre-wrap leading-relaxed">
                           {message.content}
@@ -359,7 +320,7 @@ export default function WorkspaceChat({ workspaceId, workspaceName }: WorkspaceC
             <Textarea
               ref={textareaRef}
               value={input}
-              onChange={(e) => setInput(e.target.value)}
+              onChange={(e) => setInput(chatId, e.target.value)}
               onKeyDown={handleKeyDown}
               onCompositionStart={() => setIsComposing(true)}
               onCompositionEnd={() => setIsComposing(false)}

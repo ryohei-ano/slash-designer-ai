@@ -5,7 +5,7 @@ import { useUser } from '@clerk/nextjs'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
-import { Workspace, updateWorkspace } from '@/app/actions/workspace'
+import { Workspace } from '@/app/actions/workspace'
 import { Button } from '@/components/ui/button'
 import {
   Form,
@@ -17,6 +17,7 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import { toast } from '@/components/ui/use-toast'
+import { useWorkspaceStore } from '@/store/workspaceStore'
 
 // フォームのバリデーションスキーマ
 const workspaceFormSchema = z.object({
@@ -47,14 +48,16 @@ export function WorkspaceEditForm({ workspace, onWorkspaceUpdate }: WorkspaceEdi
     },
   })
 
+  // Zustandストアからアクションを取得
+  const { updateCurrentWorkspace, error } = useWorkspaceStore()
+
   // ワークスペース更新時の処理
   const onSubmit = async (data: WorkspaceFormValues) => {
     if (!user) return
 
     setIsSubmitting(true)
     try {
-      const result = await updateWorkspace(
-        workspace.id,
+      const success = await updateCurrentWorkspace(
         {
           name: data.name,
           industry: data.industry,
@@ -63,14 +66,14 @@ export function WorkspaceEditForm({ workspace, onWorkspaceUpdate }: WorkspaceEdi
         user.id
       )
 
-      if (result.success) {
+      if (success) {
         // 更新成功
         toast({
           title: 'ワークスペースを更新しました',
           description: 'ワークスペース情報が正常に更新されました',
         })
 
-        // 現在のワークスペースを更新
+        // 親コンポーネントに更新を通知
         const updatedWorkspace = { ...workspace, ...data }
         onWorkspaceUpdate(updatedWorkspace)
         setIsEditing(false)
@@ -78,7 +81,7 @@ export function WorkspaceEditForm({ workspace, onWorkspaceUpdate }: WorkspaceEdi
         // 更新失敗
         toast({
           title: 'エラー',
-          description: result.error || 'ワークスペースの更新に失敗しました',
+          description: error || 'ワークスペースの更新に失敗しました',
           variant: 'destructive',
         })
       }

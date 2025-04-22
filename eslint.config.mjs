@@ -13,7 +13,13 @@ const eslintConfig = [
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
     rules: {
-      '@typescript-eslint/no-unused-vars': 'warn', // エラーから警告に変更
+      '@typescript-eslint/no-unused-vars': [
+        'warn',
+        {
+          argsIgnorePattern: '^_',
+          varsIgnorePattern: '^_',
+        },
+      ], // エラーから警告に変更し、_で始まる変数や引数は無視
     },
   },
 ]
