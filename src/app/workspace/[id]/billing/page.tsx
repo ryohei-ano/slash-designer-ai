@@ -16,8 +16,8 @@ export default async function BillingPage({
   params,
   searchParams,
 }: {
-  params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: { id: string }
+  searchParams: { [key: string]: string | string[] | undefined }
 }) {
   const { userId } = await auth()
 

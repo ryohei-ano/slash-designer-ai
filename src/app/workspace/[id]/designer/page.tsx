@@ -11,8 +11,8 @@ export default function DesignerPage({
   params,
   searchParams,
 }: {
-  params: { id: string };
-  searchParams: { [key: string]: string | string[] | undefined };
+  params: { id: string }
+  searchParams: { [key: string]: string | string[] | undefined }
 }) {
   return (
     <div className="container mx-auto py-6 space-y-6">
