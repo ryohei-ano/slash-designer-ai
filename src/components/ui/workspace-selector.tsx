@@ -24,6 +24,7 @@ import { ChevronDown, Plus } from 'lucide-react'
 import { Workspace } from '@/app/actions/workspace'
 import { WorkspaceEditForm } from './workspace-edit-form'
 import { useWorkspaceStore } from '@/store/workspaceStore'
+import { useChatStore } from '@/store/chatStore'
 
 export function WorkspaceSelector() {
   const { user, isLoaded } = useUser()
@@ -34,6 +35,7 @@ export function WorkspaceSelector() {
   // Zustandストアから状態とアクションを取得
   const { workspaces, currentWorkspace, isLoading, error, fetchWorkspaces, switchWorkspace } =
     useWorkspaceStore()
+  const { clearAllChats } = useChatStore()
 
   // URLからワークスペースIDを取得
   const workspaceIdFromUrl = searchParams.get('workspace')
@@ -51,13 +53,18 @@ export function WorkspaceSelector() {
     if (workspaceIdFromUrl && workspaces.length > 0 && !isLoading) {
       const workspaceFromUrl = workspaces.find((w) => w.id === workspaceIdFromUrl)
       if (workspaceFromUrl) {
+        // チャットデータをクリア
+        clearAllChats()
         switchWorkspace(workspaceFromUrl)
       }
     }
-  }, [workspaceIdFromUrl, workspaces, isLoading, switchWorkspace])
+  }, [workspaceIdFromUrl, workspaces, isLoading, switchWorkspace, clearAllChats])
 
   // ワークスペースを切り替えてページ遷移
   const handleSwitchWorkspace = (workspace: Workspace) => {
+    // チャットデータをクリア
+    clearAllChats()
+
     switchWorkspace(workspace)
 
     // 新しいワークスペースページに遷移

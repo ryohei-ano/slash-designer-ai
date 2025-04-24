@@ -27,6 +27,7 @@ export async function POST(req: Request) {
     }
 
     // システムプロンプトを追加したメッセージ配列を作成
+    // ...messagesの間に架空のやり取りをいれることで回答の精度を向上させる
     const messagesWithSystem = [{ role: 'system', content: DESIGN_CHAT_SYSTEM_PROMPT }, ...messages]
 
     try {

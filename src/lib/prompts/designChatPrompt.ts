@@ -13,6 +13,7 @@ export const DESIGN_CHAT_SYSTEM_PROMPT = `
 - 採用資料
 - UI/UXデザイン（WebやアプリのUIなど）
 
+
 以下のような依頼は受け付けてはいけません：
 - 3Dモデリング
 - アニメーション

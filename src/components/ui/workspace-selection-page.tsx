@@ -14,6 +14,8 @@ import { Button } from '@/components/ui/button'
 import { Workspace } from '@/app/actions/workspace'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { AlertCircle } from 'lucide-react'
+import { useChatStore } from '@/store/chatStore'
+import { useUser } from '@clerk/nextjs'
 
 interface WorkspaceSelectionPageProps {
   workspaces: Workspace[]
@@ -24,6 +26,8 @@ export default function WorkspaceSelectionPage({ workspaces, error }: WorkspaceS
   const router = useRouter()
   const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const { user } = useUser()
+  const { clearAllChats } = useChatStore()
 
   const handleWorkspaceSelect = (workspaceId: string) => {
     setSelectedWorkspace(workspaceId)
@@ -33,6 +37,9 @@ export default function WorkspaceSelectionPage({ workspaces, error }: WorkspaceS
     if (!selectedWorkspace) return
 
     setIsLoading(true)
+
+    // チャットデータをクリア
+    clearAllChats()
 
     // 選択したワークスペースをローカルストレージに保存（次回のために）
     localStorage.setItem('lastSelectedWorkspace', selectedWorkspace)
