@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
           const text = event.text
 
           // セッションを取得
-          const session = getChatSession(threadTs)
+          const session = await getChatSession(threadTs)
 
           // セッションが存在しない場合
           if (!session) {
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
           }
 
           // セッションが期限切れの場合
-          if (isSessionExpired(threadTs)) {
+          if (await isSessionExpired(threadTs)) {
             await sendSlackMessage(channelId, {
               text: 'セッションの有効期限が切れました。新しい依頼を開始するには `/designer` コマンドを使用してください。',
               thread_ts: threadTs,
@@ -87,7 +87,7 @@ export async function POST(request: NextRequest) {
           }
 
           // 残り時間が2分未満の場合は警告
-          const remainingMinutes = getSessionRemainingMinutes(threadTs)
+          const remainingMinutes = await getSessionRemainingMinutes(threadTs)
           if (remainingMinutes <= 2) {
             await sendSlackMessage(channelId, {
               text: `⚠️ セッションの有効期限まであと約${remainingMinutes}分です。まもなくセッションが終了します。`,
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
           }
 
           // ユーザーメッセージをセッションに追加
-          addMessageToSession(threadTs, {
+          await addMessageToSession(threadTs, {
             role: 'user',
             content: text,
           })

@@ -33,7 +33,7 @@ const openai = new OpenAI({
  * @param text テキスト
  * @returns 抽出されたJSONデータ（抽出できない場合はnull）
  */
-export function extractJsonData(text: string): DesignRequestData | null {
+export async function extractJsonData(text: string): Promise<DesignRequestData | null> {
   try {
     const jsonMatch = text.match(/\{[\s\S]*\}/)
     if (jsonMatch) {
@@ -90,15 +90,15 @@ export async function processAiMessageAndSendToSlack(
     const aiResponse = await sendMessageToOpenAI(messages)
 
     // セッションにアシスタントのメッセージを追加
-    addMessageToSession(threadTs, {
+    await addMessageToSession(threadTs, {
       role: 'assistant',
       content: aiResponse,
     })
 
     // JSONデータを抽出
-    const jsonData = extractJsonData(aiResponse)
+    const jsonData = await extractJsonData(aiResponse)
     if (jsonData) {
-      updateSessionJsonData(threadTs, jsonData)
+      await updateSessionJsonData(threadTs, jsonData)
     }
 
     // Slackにメッセージを送信
@@ -106,7 +106,7 @@ export async function processAiMessageAndSendToSlack(
       // response_urlが提供されている場合はそれを使用
       await sendResponseToUrl(responseUrl, {
         text: aiResponse,
-        blocks: formatAiResponseBlocks(aiResponse),
+        blocks: await formatAiResponseBlocks(aiResponse),
         thread_ts: threadTs,
         replace_original: false,
       })
@@ -114,7 +114,7 @@ export async function processAiMessageAndSendToSlack(
       // 通常のAPIを使用
       await sendSlackMessage(channelId, {
         text: aiResponse,
-        blocks: formatAiResponseBlocks(aiResponse),
+        blocks: await formatAiResponseBlocks(aiResponse),
         thread_ts: threadTs,
       })
     }
@@ -188,7 +188,7 @@ export async function createTaskFromJsonAndNotify(
     // タスク作成の通知をSlackに送信
     await sendSlackMessage(channelId, {
       text: `デザイン依頼がタスクとして登録されました: ${jsonData.title}`,
-      blocks: createTaskCompletionBlocks(result.request.id, jsonData.title, workspaceId),
+      blocks: await createTaskCompletionBlocks(result.request.id, jsonData.title, workspaceId),
       thread_ts: threadTs,
     })
 

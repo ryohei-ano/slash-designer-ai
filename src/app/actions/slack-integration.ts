@@ -14,7 +14,7 @@ const ENCRYPTION_IV = process.env.ENCRYPTION_IV || 'default-iv-16ch'
  * @param token 暗号化するトークン
  * @returns 暗号化されたトークン
  */
-function encryptToken(token: string): string {
+async function encryptToken(token: string): Promise<string> {
   const cipher = crypto.createCipheriv(
     'aes-256-cbc',
     Buffer.from(ENCRYPTION_KEY),
@@ -30,7 +30,7 @@ function encryptToken(token: string): string {
  * @param encryptedToken 暗号化されたトークン
  * @returns 復号されたトークン
  */
-function decryptToken(encryptedToken: string): string {
+async function decryptToken(encryptedToken: string): Promise<string> {
   const decipher = crypto.createDecipheriv(
     'aes-256-cbc',
     Buffer.from(ENCRYPTION_KEY),
@@ -71,7 +71,7 @@ export async function saveSlackIntegration(
     }
 
     // アクセストークンを暗号化
-    const encryptedToken = encryptToken(accessToken)
+    const encryptedToken = await encryptToken(accessToken)
 
     // 既存の連携情報を確認
     const { data: existingIntegration, error: checkError } = await supabaseAdmin
@@ -342,7 +342,7 @@ export async function getSlackAccessToken(workspaceId: string) {
     }
 
     // アクセストークンを復号化
-    const decryptedToken = decryptToken(data.slack_access_token)
+    const decryptedToken = await decryptToken(data.slack_access_token)
 
     return { success: true, accessToken: decryptedToken }
   } catch (error) {

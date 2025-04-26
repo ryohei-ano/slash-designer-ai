@@ -106,7 +106,7 @@ export async function sendResponseToUrl(responseUrl: string, message: SlackMessa
  * @param message レスポンスメッセージ
  * @returns レスポンスオブジェクト
  */
-export function createCommandResponse(message: SlackMessage) {
+export async function createCommandResponse(message: SlackMessage) {
   return new Response(JSON.stringify(message), {
     headers: {
       'Content-Type': 'application/json',
@@ -119,8 +119,8 @@ export function createCommandResponse(message: SlackMessage) {
  * @param text AIからの応答テキスト
  * @returns Slackのブロック形式
  */
-export function formatAiResponseBlocks(text: string) {
-  return [
+export async function formatAiResponseBlocks(text: string): Promise<SlackBlock[]> {
+  return Promise.resolve([
     {
       type: 'section',
       text: {
@@ -128,7 +128,7 @@ export function formatAiResponseBlocks(text: string) {
         text: text,
       },
     },
-  ]
+  ])
 }
 
 /**
@@ -138,13 +138,17 @@ export function formatAiResponseBlocks(text: string) {
  * @param workspaceId ワークスペースID
  * @returns Slackのブロック形式
  */
-export function createTaskCompletionBlocks(taskId: number, title: string, workspaceId?: string) {
+export async function createTaskCompletionBlocks(
+  taskId: number,
+  title: string,
+  workspaceId?: string
+): Promise<SlackBlock[]> {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://your-app-url.com'
   const taskUrl = workspaceId
     ? `${appUrl}/workspace/${workspaceId}/tasks/${taskId}`
     : `${appUrl}/dashboard/tasks`
 
-  return [
+  return Promise.resolve([
     {
       type: 'section',
       text: {
@@ -167,5 +171,5 @@ export function createTaskCompletionBlocks(taskId: number, title: string, worksp
         },
       ],
     },
-  ]
+  ])
 }

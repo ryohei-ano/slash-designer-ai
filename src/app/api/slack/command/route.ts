@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
 
     // コマンドが /designer でない場合はエラー
     if (command !== '/designer') {
-      return createCommandResponse({
+      return await createCommandResponse({
         text: '無効なコマンドです。/designer コマンドのみサポートしています。',
         response_type: 'ephemeral',
       })
@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
 
     // テキストが空の場合はヘルプメッセージを表示
     if (!text.trim()) {
-      return createCommandResponse({
+      return await createCommandResponse({
         text: 'デザイン依頼の内容を入力してください。例: `/designer バナー作りたい`',
         response_type: 'ephemeral',
       })
@@ -80,7 +80,9 @@ export async function POST(request: NextRequest) {
         // 初期メッセージをresponse_urlに送信
         await sendResponseToUrl(responseUrl, {
           text: 'デザイン依頼を受け付けました。詳細をお聞かせください。',
-          blocks: formatAiResponseBlocks('デザイン依頼を受け付けました。詳細をお聞かせください。'),
+          blocks: await formatAiResponseBlocks(
+            'デザイン依頼を受け付けました。詳細をお聞かせください。'
+          ),
           response_type: 'in_channel', // チャンネル内に表示
         })
 
@@ -90,7 +92,7 @@ export async function POST(request: NextRequest) {
         const threadTs = `${Date.now() / 1000}.000000`
 
         // チャットセッションを作成
-        const session = createChatSession(
+        const session = await createChatSession(
           threadTs,
           channelId,
           userId,
@@ -114,7 +116,7 @@ export async function POST(request: NextRequest) {
     }, 0)
 
     // 即時レスポンスを返す
-    return createCommandResponse({
+    return await createCommandResponse({
       text: 'デザイン依頼を処理しています...',
       response_type: 'ephemeral', // ユーザーにのみ表示
     })

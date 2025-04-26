@@ -54,7 +54,7 @@ const SESSION_TIMEOUT = 15 * 60 * 1000 // 15分
  * @param workspaceId ワークスペースID（オプション）
  * @returns 作成されたセッション
  */
-export function createChatSession(
+export async function createChatSession(
   threadTs: string,
   channelId: string,
   userId: string,
@@ -62,7 +62,7 @@ export function createChatSession(
   initialMessage?: string,
   responseUrl?: string,
   workspaceId?: string
-): ChatSession {
+): Promise<ChatSession> {
   // システムプロンプトを含む初期メッセージ配列
   const messages: ChatMessage[] = [
     {
@@ -103,7 +103,7 @@ export function createChatSession(
  * @param threadTs スレッドのタイムスタンプ（セッションID）
  * @returns セッション（存在しない場合はnull）
  */
-export function getChatSession(threadTs: string): ChatSession | null {
+export async function getChatSession(threadTs: string): Promise<ChatSession | null> {
   return sessions.get(threadTs) || null
 }
 
@@ -113,7 +113,10 @@ export function getChatSession(threadTs: string): ChatSession | null {
  * @param message 追加するメッセージ
  * @returns 更新されたセッション（存在しない場合はnull）
  */
-export function addMessageToSession(threadTs: string, message: ChatMessage): ChatSession | null {
+export async function addMessageToSession(
+  threadTs: string,
+  message: ChatMessage
+): Promise<ChatSession | null> {
   const session = sessions.get(threadTs)
   if (!session) return null
 
@@ -133,10 +136,10 @@ export function addMessageToSession(threadTs: string, message: ChatMessage): Cha
  * @param jsonData 更新するJSONデータ
  * @returns 更新されたセッション（存在しない場合はnull）
  */
-export function updateSessionJsonData(
+export async function updateSessionJsonData(
   threadTs: string,
   jsonData: DesignRequestData
-): ChatSession | null {
+): Promise<ChatSession | null> {
   const session = sessions.get(threadTs)
   if (!session) return null
 
@@ -155,7 +158,7 @@ export function updateSessionJsonData(
  * @param threadTs スレッドのタイムスタンプ（セッションID）
  * @returns 有効期限切れかどうか
  */
-export function isSessionExpired(threadTs: string): boolean {
+export async function isSessionExpired(threadTs: string): Promise<boolean> {
   const session = sessions.get(threadTs)
   if (!session) return true
 
@@ -168,7 +171,7 @@ export function isSessionExpired(threadTs: string): boolean {
  * @param threadTs スレッドのタイムスタンプ（セッションID）
  * @returns 残り時間（分）、セッションが存在しない場合は0
  */
-export function getSessionRemainingMinutes(threadTs: string): number {
+export async function getSessionRemainingMinutes(threadTs: string): Promise<number> {
   const session = sessions.get(threadTs)
   if (!session) return 0
 
@@ -183,7 +186,7 @@ export function getSessionRemainingMinutes(threadTs: string): number {
  * セッションを削除する
  * @param threadTs スレッドのタイムスタンプ（セッションID）
  */
-export function deleteChatSession(threadTs: string): void {
+export async function deleteChatSession(threadTs: string): Promise<void> {
   sessions.delete(threadTs)
 }
 
@@ -191,7 +194,7 @@ export function deleteChatSession(threadTs: string): void {
  * 期限切れのセッションをクリーンアップする
  * 定期的に実行することを推奨（例：1時間ごと）
  */
-export function cleanupExpiredSessions(): void {
+export async function cleanupExpiredSessions(): Promise<void> {
   const currentTime = Date.now()
 
   for (const [threadTs, session] of sessions.entries()) {
@@ -202,6 +205,6 @@ export function cleanupExpiredSessions(): void {
 }
 
 // 開発用：すべてのセッションを取得（デバッグ目的）
-export function getAllSessions(): Map<string, ChatSession> {
+export async function getAllSessions(): Promise<Map<string, ChatSession>> {
   return sessions
 }
