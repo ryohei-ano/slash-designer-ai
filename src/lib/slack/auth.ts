@@ -1,5 +1,3 @@
-'use server'
-
 /**
  * Slackからのリクエストを検証する（簡易版）
  * @param signature Slackからのリクエストに含まれるX-Slack-Signatureヘッダー

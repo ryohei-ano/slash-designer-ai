@@ -1,5 +1,3 @@
-'use server'
-
 import { DESIGN_CHAT_SYSTEM_PROMPT } from '@/lib/prompts'
 
 /**

@@ -19,17 +19,7 @@ export async function POST(request: NextRequest) {
     // リクエストボディを取得
     const body = await request.text()
 
-    // Slackからのリクエストを検証
-    const signature = request.headers.get('x-slack-signature')
-    const timestamp = request.headers.get('x-slack-request-timestamp')
-
-    const isValid = await verifySlackRequest(signature, timestamp, body)
-    if (!isValid) {
-      console.error('Slack署名の検証に失敗しました')
-      return NextResponse.json({ error: '不正なリクエスト' }, { status: 401 })
-    }
-
-    // フォームデータをパース
+    // フォームデータをパース（署名検証の前に行う）
     const formData = new URLSearchParams(body)
     const command = formData.get('command')
     const text = formData.get('text') || ''
@@ -40,10 +30,21 @@ export async function POST(request: NextRequest) {
 
     // コマンドが /designer でない場合はエラー
     if (command !== '/designer') {
+      console.log('無効なコマンド:', command)
       return await createCommandResponse({
         text: '無効なコマンドです。/designer コマンドのみサポートしています。',
         response_type: 'ephemeral',
       })
+    }
+
+    // Slackからのリクエストを検証
+    const signature = request.headers.get('x-slack-signature')
+    const timestamp = request.headers.get('x-slack-request-timestamp')
+
+    const isValid = await verifySlackRequest(signature, timestamp, body)
+    if (!isValid) {
+      console.error('Slack署名の検証に失敗しました')
+      return NextResponse.json({ error: '不正なリクエスト' }, { status: 401 })
     }
 
     // テキストが空の場合はヘルプメッセージを表示
@@ -116,6 +117,7 @@ export async function POST(request: NextRequest) {
     }, 0)
 
     // 即時レスポンスを返す
+    console.log('コマンド処理完了:', command, text)
     return await createCommandResponse({
       text: 'デザイン依頼を処理しています...',
       response_type: 'ephemeral', // ユーザーにのみ表示
