@@ -1,0 +1,99 @@
+{
+  "display_information": {
+    "name": "デザイナーチャット",
+    "description": "デザイン依頼を受け付けるAIアシスタント",
+    "background_color": "#f06292"
+  },
+  "features": {
+    "app_home": {
+      "home_tab_enabled": true,
+      "messages_tab_enabled": true,
+      "messages_tab_read_only_enabled": false
+    },
+    "bot_user": {
+      "display_name": "デザイナーチャット",
+      "always_online": true
+    },
+    "slash_commands": [
+      {
+        "command": "/designer",
+        "description": "デザイン依頼",
+        "usage_hint": "[依頼内容を書く]",
+        "should_escape": false
+      }
+    ],
+    "ai": {
+      "provider": {
+        "openai": {
+          "model": "gpt-4o-mini"
+        }
+      },
+      "system_prompt": "あなたはプロのデザイン依頼受付エージェントです。あなたの人格は20代の女性です。\n以下のジャンルに限り、依頼を受け付けてください。それ以外の依頼が来た場合は、受け付けできない旨を明確に伝えてください。回答はMarkdown形式で返してください。適切に改行などを行い、読みやすい文章を心がけてください。\n\n受け付け可能なジャンル：\n- ランディングページ（LP）\n- ロゴデザイン\n- SNS投稿用のクリエイティブ\n- 広告バナー\n- 提案資料\n- 営業資料\n- 採用資料\n- UI/UXデザイン（WebやアプリのUIなど）\n\n\n以下のような依頼は受け付けてはいけません：\n- 3Dモデリング\n- アニメーション\n- イラスト制作（キャラクターなど含む）\n\n受け付け可能なジャンルの場合は、依頼内容を詳細にヒアリングし、デザインの手戻りや認識の齟齬が少なくなるように努めてください。\nユーザーが自然な日本語で伝えてくる内容を、できる限り明確かつ詳細にヒアリングし、以下の構造化されたJSON形式に変換してください。\nまた、もしユーザーが単なる質問や相談をしてきた場合は、できるだけタスクの依頼の会話に戻してください。それ以外はデザイン関連のアドバイスや情報提供を行ってください。\n\n特に以下の点を必ず抽出してください：\n- 作りたいもの（例：Instagram広告バナー、ランディングページ）\n- 想定する用途やターゲット層（誰が見るか）\n- サイズや比率（例：1080x1920など）\n- 使用したいテキストや言葉\n- 色、雰囲気、参考資料（あれば）\n- 納期（急ぎかどうか）",
+      "tools": [
+        {
+          "type": "function",
+          "function": {
+            "name": "create_design_task",
+            "description": "デザイン依頼をタスクとして保存する",
+            "parameters": {
+              "type": "object",
+              "properties": {
+                "title": {
+                  "type": "string",
+                  "description": "依頼のタイトル"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "成果物の詳細（用途・サイズ・文言・ターゲット・色・納期など全て）"
+                },
+                "category": {
+                  "type": "string",
+                  "description": "バナー / LP / SNS投稿など"
+                },
+                "urgency": {
+                  "type": "string",
+                  "enum": ["通常", "急ぎ"],
+                  "description": "依頼の緊急度"
+                },
+                "workspace_id": {
+                  "type": "string",
+                  "description": "ワークスペースID（オプション）"
+                }
+              },
+              "required": ["title", "description", "category", "urgency"]
+            }
+          }
+        }
+      ]
+    }
+  },
+  "oauth_config": {
+    "scopes": {
+      "bot": [
+        "app_mentions:read",
+        "channels:history",
+        "channels:read",
+        "chat:write",
+        "commands",
+        "assistant:write",
+        "ai.function"
+      ]
+    }
+  },
+  "settings": {
+    "event_subscriptions": {
+      "request_url": "https://your-app-domain.com/api/slack/events",
+      "bot_events": ["message.channels", "message.groups", "message.im", "message.mpim"]
+    },
+    "interactivity": {
+      "is_enabled": true,
+      "request_url": "https://your-app-domain.com/api/slack/events"
+    },
+    "org_deploy_enabled": false,
+    "socket_mode_enabled": false,
+    "token_rotation_enabled": false,
+    "ai": {
+      "function_execution_url": "https://your-app-domain.com/api/slack/ai-handler"
+    }
+  }
+}

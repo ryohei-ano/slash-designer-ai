@@ -26,7 +26,7 @@ export default function WorkspaceSelectionPage({ workspaces, error }: WorkspaceS
   const router = useRouter()
   const [selectedWorkspace, setSelectedWorkspace] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  const { user } = useUser()
+  const { user: _user } = useUser()
   const { clearAllChats } = useChatStore()
 
   const handleWorkspaceSelect = (workspaceId: string) => {

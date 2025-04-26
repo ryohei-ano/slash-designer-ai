@@ -23,6 +23,7 @@ import {
 import { ChevronDown, Plus } from 'lucide-react'
 import { Workspace } from '@/app/actions/workspace'
 import { WorkspaceEditForm } from './workspace-edit-form'
+import SlackIntegrationSection from './slack-integration-section'
 import { useWorkspaceStore } from '@/store/workspaceStore'
 import { useChatStore } from '@/store/chatStore'
 
@@ -190,7 +191,7 @@ export function WorkspaceSelector() {
             <DialogTitle>ワークスペース編集</DialogTitle>
             <DialogDescription>ワークスペース情報の編集ができます</DialogDescription>
           </DialogHeader>
-          <div className="py-6">
+          <div className="py-6 space-y-8">
             <WorkspaceEditForm
               workspace={currentWorkspace}
               onWorkspaceUpdate={(_updatedWorkspace) => {
@@ -198,6 +199,8 @@ export function WorkspaceSelector() {
                 setIsEditDialogOpen(false)
               }}
             />
+
+            <SlackIntegrationSection workspaceId={currentWorkspace.id} />
           </div>
           <DialogFooter>
             <p className="text-xs text-muted-foreground">
