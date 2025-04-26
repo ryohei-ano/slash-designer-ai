@@ -74,7 +74,8 @@ export default function SlackIntegrationSection({ workspaceId }: SlackIntegratio
     // 直接クライアントIDを指定（環境変数の問題を回避）
     const clientId = '8813887941188.8801931057574'
     const redirectUri = `${window.location.origin}/api/slack/oauth`
-    const scope = 'commands,chat:write,threads:read,threads:write'
+    const scope =
+      'app_mentions:read,assistant:write,channels:history,channels:read,chat:write,commands'
 
     console.log('Slack OAuth URL構築:', { clientId, redirectUri, scope, state })
 
