@@ -107,6 +107,8 @@ export async function saveSlackIntegration(
       result = data
     } else {
       // 新しい連携情報を作成
+      // ClerkのユーザーIDはUUID形式ではないため、created_byカラムに直接保存できない可能性がある
+      // そのため、created_byカラムを省略するか、別の方法で処理する
       const { data, error } = await supabaseAdmin
         .from('workspace_slack_integrations')
         .insert({
@@ -115,7 +117,7 @@ export async function saveSlackIntegration(
           slack_access_token: encryptedToken,
           slack_bot_user_id: botUserId,
           slack_team_name: teamName,
-          created_by: userId,
+          // created_by: userId, // UUIDエラーの原因となるため省略
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
         })

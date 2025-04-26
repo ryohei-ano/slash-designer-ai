@@ -40,7 +40,7 @@ export async function saveDesignRequest(data: RequestData, workspaceId?: string)
       category: string
       urgency: '通常' | '急ぎ'
       status: string
-      clerk_user_id: string
+      clerk_user_id?: string // オプショナルに変更
       created_at: string
       workspace_id?: string
     } = {
@@ -49,7 +49,7 @@ export async function saveDesignRequest(data: RequestData, workspaceId?: string)
       category: data.category,
       urgency: data.urgency,
       status: '受付中',
-      clerk_user_id: userId,
+      // clerk_user_id: userId, // UUIDエラーの原因となるため省略
       created_at: new Date().toISOString(),
     }
 
