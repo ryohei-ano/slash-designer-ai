@@ -24,6 +24,12 @@ export async function POST(request: NextRequest) {
     const body = await request.text()
     const data = JSON.parse(body)
 
+    // URL検証チャレンジに応答（署名検証の前に行う）
+    if (data.type === 'url_verification') {
+      console.log('URL検証チャレンジを受信しました:', data.challenge)
+      return NextResponse.json({ challenge: data.challenge })
+    }
+
     // Slackからのリクエストを検証
     const signature = request.headers.get('x-slack-signature')
     const timestamp = request.headers.get('x-slack-request-timestamp')
@@ -32,11 +38,6 @@ export async function POST(request: NextRequest) {
     if (!isValid) {
       console.error('Slack署名の検証に失敗しました')
       return NextResponse.json({ error: '不正なリクエスト' }, { status: 401 })
-    }
-
-    // URL検証チャレンジに応答
-    if (data.type === 'url_verification') {
-      return NextResponse.json({ challenge: data.challenge })
     }
 
     // イベントコールバックの処理
