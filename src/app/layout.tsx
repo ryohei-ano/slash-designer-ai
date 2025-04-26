@@ -46,6 +46,17 @@ export default function RootLayout({
   return (
     <ClerkProvider localization={jaJP}>
       <html lang="jp">
+        <head>
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `
+                window.ENV = {
+                  SLACK_CLIENT_ID: "${process.env.NEXT_PUBLIC_SLACK_CLIENT_ID}"
+                };
+              `,
+            }}
+          />
+        </head>
         <body className={`${notoSansJP.variable} ${geistMono.variable} antialiased font-sans`}>
           <ConditionalHeader>
             <div className="flex items-center gap-2">

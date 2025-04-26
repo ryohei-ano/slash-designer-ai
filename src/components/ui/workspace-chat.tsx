@@ -56,6 +56,27 @@ export default function WorkspaceChat({ workspaceId, workspaceName }: WorkspaceC
   const input = inputValues[chatId] || ''
   const conversationId = conversationIds[chatId]
 
+  // ワークスペース切り替えイベントのリスナー
+  useEffect(() => {
+    // ワークスペース切り替えイベントのハンドラー
+    const handleWorkspaceSwitched = (event: CustomEvent) => {
+      const { workspaceId: newWorkspaceId } = event.detail
+
+      // 現在表示中のワークスペースと異なる場合はトランジション効果を表示
+      if (newWorkspaceId !== workspaceId) {
+        setIsTransitioning(true)
+      }
+    }
+
+    // イベントリスナーを追加
+    window.addEventListener('workspace-switched', handleWorkspaceSwitched as EventListener)
+
+    // クリーンアップ関数
+    return () => {
+      window.removeEventListener('workspace-switched', handleWorkspaceSwitched as EventListener)
+    }
+  }, [workspaceId])
+
   // ワークスペース切り替え時のトランジション効果
   useEffect(() => {
     // ワークスペースが読み込み中または現在のワークスペースIDが一致しない場合

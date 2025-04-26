@@ -15,7 +15,7 @@ const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'default-encryption-key-for
 async function encryptToken(token: string): Promise<string> {
   // 本番環境では適切な暗号化方法を使用してください
   // この実装は簡易的なものです
-  return Buffer.from(token).toString('base64');
+  return Buffer.from(token).toString('base64')
 }
 
 /**
@@ -26,7 +26,7 @@ async function encryptToken(token: string): Promise<string> {
 async function decryptToken(encryptedToken: string): Promise<string> {
   // 本番環境では適切な復号方法を使用してください
   // この実装は簡易的なものです
-  return Buffer.from(encryptedToken, 'base64').toString('utf8');
+  return Buffer.from(encryptedToken, 'base64').toString('utf8')
 }
 
 /**

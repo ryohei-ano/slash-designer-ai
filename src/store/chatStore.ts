@@ -2,6 +2,7 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { useEffect } from 'react'
 
 // メッセージの型定義
 export type Message = {
@@ -19,6 +20,7 @@ interface ChatState {
   messages: Record<string, Message[]> // キーはチャットID（ワークスペースIDなど）
   inputValues: Record<string, string> // キーはチャットID
   conversationIds: Record<string, string | undefined> // キーはチャットID
+  activeWorkspaceId: string | null // 現在アクティブなワークスペースID
   isLoading: boolean
   isStreaming: boolean
   isSendingTypingIndicator: boolean
@@ -30,12 +32,14 @@ interface ChatState {
   updateLastMessage: (chatId: string, content: string) => void
   setInput: (chatId: string, input: string) => void
   setConversationId: (chatId: string, conversationId: string | undefined) => void
+  setActiveWorkspaceId: (workspaceId: string | null) => void
   setIsLoading: (isLoading: boolean) => void
   setIsStreaming: (isStreaming: boolean) => void
   setIsSendingTypingIndicator: (isSending: boolean) => void
   setError: (error: string | null) => void
   clearChat: (chatId: string) => void
   clearAllChats: () => void
+  clearWorkspaceChats: (workspaceId: string) => void
 
   // ワークスペースチャット用のヘルパー関数
   getChatId: (userId: string | null | undefined, workspaceId: string, chatType: ChatType) => string
@@ -49,6 +53,7 @@ export const useChatStore = create<ChatState>()(
       messages: {},
       inputValues: {},
       conversationIds: {},
+      activeWorkspaceId: null,
       isLoading: false,
       isStreaming: false,
       isSendingTypingIndicator: false,
@@ -129,6 +134,32 @@ export const useChatStore = create<ChatState>()(
           conversationIds: {},
           error: null,
         }),
+
+      // 特定のワークスペースに関連するチャットをクリアするアクション
+      clearWorkspaceChats: (workspaceId: string) =>
+        set((state) => {
+          const newMessages = { ...state.messages }
+          const newInputValues = { ...state.inputValues }
+          const newConversationIds = { ...state.conversationIds }
+
+          // ワークスペースIDを含むキーを検索して削除
+          Object.keys(newMessages).forEach((key) => {
+            if (key.includes(workspaceId)) {
+              delete newMessages[key]
+              delete newInputValues[key]
+              delete newConversationIds[key]
+            }
+          })
+
+          return {
+            messages: newMessages,
+            inputValues: newInputValues,
+            conversationIds: newConversationIds,
+          }
+        }),
+
+      // アクティブなワークスペースIDを設定するアクション
+      setActiveWorkspaceId: (workspaceId: string | null) => set({ activeWorkspaceId: workspaceId }),
 
       // チャットIDを生成するヘルパー関数
       getChatId: (userId, workspaceId, chatType) => {

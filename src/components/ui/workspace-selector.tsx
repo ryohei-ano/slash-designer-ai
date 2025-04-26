@@ -36,7 +36,7 @@ export function WorkspaceSelector() {
   // Zustandストアから状態とアクションを取得
   const { workspaces, currentWorkspace, isLoading, error, fetchWorkspaces, switchWorkspace } =
     useWorkspaceStore()
-  const { clearAllChats } = useChatStore()
+  const { clearWorkspaceChats, setActiveWorkspaceId } = useChatStore()
 
   // URLからワークスペースIDを取得
   const workspaceIdFromUrl = searchParams.get('workspace')
@@ -54,22 +54,46 @@ export function WorkspaceSelector() {
     if (workspaceIdFromUrl && workspaces.length > 0 && !isLoading) {
       const workspaceFromUrl = workspaces.find((w) => w.id === workspaceIdFromUrl)
       if (workspaceFromUrl) {
-        // チャットデータをクリア
-        clearAllChats()
+        // 現在のワークスペースのチャットデータをクリア
+        if (currentWorkspace) {
+          clearWorkspaceChats(currentWorkspace.id)
+        }
+
+        // アクティブなワークスペースIDを設定
+        setActiveWorkspaceId(workspaceFromUrl.id)
+
+        // ワークスペースを切り替え
         switchWorkspace(workspaceFromUrl)
       }
     }
-  }, [workspaceIdFromUrl, workspaces, isLoading, switchWorkspace, clearAllChats])
+  }, [
+    workspaceIdFromUrl,
+    workspaces,
+    isLoading,
+    switchWorkspace,
+    clearWorkspaceChats,
+    setActiveWorkspaceId,
+    currentWorkspace,
+  ])
 
   // ワークスペースを切り替えてページ遷移
   const handleSwitchWorkspace = (workspace: Workspace) => {
-    // チャットデータをクリア
-    clearAllChats()
+    // 現在のワークスペースと異なる場合のみ処理を実行
+    if (!currentWorkspace || currentWorkspace.id !== workspace.id) {
+      // 現在のワークスペースのチャットデータをクリア
+      if (currentWorkspace) {
+        clearWorkspaceChats(currentWorkspace.id)
+      }
 
-    switchWorkspace(workspace)
+      // アクティブなワークスペースIDを設定
+      setActiveWorkspaceId(workspace.id)
 
-    // 新しいワークスペースページに遷移
-    router.push(`/workspace/${workspace.id}/designer`)
+      // ワークスペースを切り替え
+      switchWorkspace(workspace)
+
+      // 新しいワークスペースページに遷移
+      router.push(`/workspace/${workspace.id}/designer`)
+    }
   }
 
   // ワークスペースが読み込み中または存在しない場合

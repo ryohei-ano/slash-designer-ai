@@ -104,7 +104,16 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       switchWorkspace: (workspace: Workspace) => {
         // 最後に選択したワークスペースとして保存
         localStorage.setItem('lastSelectedWorkspace', workspace.id)
+
+        // 現在のワークスペースを更新
         set({ currentWorkspace: workspace })
+
+        // イベントを発行してワークスペース切り替えを通知
+        window.dispatchEvent(
+          new CustomEvent('workspace-switched', {
+            detail: { workspaceId: workspace.id },
+          })
+        )
       },
 
       // 現在のワークスペースを更新するアクション

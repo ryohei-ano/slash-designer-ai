@@ -30,7 +30,9 @@ export async function verifySlackRequest(
 
   // 本番環境では適切な署名検証を実装してください
   // 開発環境では常にtrueを返します
-  console.warn('開発環境では署名検証をスキップしています。本番環境では適切な検証を実装してください。')
+  console.warn(
+    '開発環境では署名検証をスキップしています。本番環境では適切な検証を実装してください。'
+  )
   return true
 }
 

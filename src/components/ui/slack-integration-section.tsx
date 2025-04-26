@@ -71,9 +71,12 @@ export default function SlackIntegrationSection({ workspaceId }: SlackIntegratio
     const state = Buffer.from(JSON.stringify({ workspaceId })).toString('base64')
 
     // Slack OAuth認証URLを構築
-    const clientId = process.env.NEXT_PUBLIC_SLACK_CLIENT_ID
+    // 直接クライアントIDを指定（環境変数の問題を回避）
+    const clientId = '8813887941188.8801931057574'
     const redirectUri = `${window.location.origin}/api/slack/oauth`
-    const scope = 'commands,chat:write,channels:history'
+    const scope = 'commands,chat:write,threads:read,threads:write'
+
+    console.log('Slack OAuth URL構築:', { clientId, redirectUri, scope, state })
 
     const authUrl = `https://slack.com/oauth/v2/authorize?client_id=${clientId}&scope=${scope}&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}`
 
