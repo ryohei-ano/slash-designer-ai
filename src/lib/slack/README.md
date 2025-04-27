@@ -70,16 +70,18 @@ AIとの会話の中で、`!create_task` または `!タスク作成` と入力�
 
 開発環境では、`SKIP_SLACK_SIGNATURE_CHECK=true` を設定することで、署名検証をスキップできます。本番環境では必ず署名検証を有効にしてください。
 
-## Edge Runtimeでの注意点
+## Node.js Runtimeでの注意点
 
-このアプリケーションはEdge Runtimeで動作するように設計されていますが、いくつかの制限があります：
+このアプリケーションはNode.js Runtimeで動作するように設計されています：
 
-1. Edge Runtimeでは、Node.jsのコアモジュール（`crypto`、`path`、`fs`など）が使用できません。
-2. 署名検証は現在スキップされています。本番環境では、Web Crypto APIを使用した署名検証を実装する必要があります。
-3. Base64エンコード/デコードには、`Buffer`の代わりに`btoa`/`atob`を使用しています。
+1. 署名検証には、Web Crypto API（`crypto.subtle`）を使用しています。
+2. Base64エンコード/デコードには、クライアントサイドでは`btoa`/`atob`を使用しています。
+3. サーバーサイドでは、Node.jsのコアモジュールを使用できるようになりました。
 
-これらの制限に対応するために、以下の対策を講じています：
+これらの対応のために、以下の設定を行っています：
 
-1. `next.config.ts`でポリフィルを設定
-2. `NextConnectReceiver`で署名検証をスキップするオプションを追加
+1. `next.config.ts`でポリフィルを設定（crypto, path, fs, stream, querystring, buffer, util, zlib, url）
+2. `NextConnectReceiver`でWeb Crypto APIを使用した署名検証を実装
 3. OAuth認証コールバックで`atob`を使用してBase64デコードを行う
+4. `transpilePackages`に`@slack/bolt`を追加して、外部パッケージとして処理
+5. `runtime = 'nodejs'`を設定して、Node.jsランタイムを使用

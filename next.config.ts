@@ -12,10 +12,8 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_SLACK_CLIENT_ID: process.env.NEXT_PUBLIC_SLACK_CLIENT_ID,
   },
-  // Edge Runtimeでのポリフィル設定
-  experimental: {
-    serverComponentsExternalPackages: ['@slack/bolt'],
-  },
+  // 外部パッケージの設定
+  transpilePackages: ['@slack/bolt'],
   webpack: (config, { isServer }) => {
     if (isServer) {
       // サーバーサイドでのポリフィル
@@ -24,6 +22,12 @@ const nextConfig: NextConfig = {
         crypto: false,
         path: false,
         fs: false,
+        stream: false,
+        querystring: false,
+        buffer: false,
+        util: false,
+        zlib: false,
+        url: false,
       }
     }
     return config

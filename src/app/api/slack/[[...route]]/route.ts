@@ -16,7 +16,7 @@ import {
 import { getWorkspaceIdBySlackTeamId, saveSlackIntegration } from '@/app/actions/slack-integration'
 import { formatAiResponseBlocks, sendResponseToUrl } from '@/lib/slack/message'
 
-export const runtime = 'edge'
+export const runtime = 'nodejs'
 
 // Slack Boltアプリケーションの初期化
 const receiver = new NextConnectReceiver({

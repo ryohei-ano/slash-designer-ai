@@ -68,11 +68,21 @@ export default function SlackIntegrationSection({ workspaceId }: SlackIntegratio
   // Slack連携を開始
   const handleConnect = () => {
     // ワークスペースIDをBase64エンコードしてstateパラメータに設定
-    const state = Buffer.from(JSON.stringify({ workspaceId })).toString('base64')
+    const state = btoa(JSON.stringify({ workspaceId }))
 
     // Slack OAuth認証URLを構築
-    // 直接クライアントIDを指定（環境変数の問題を回避）
-    const clientId = '8813887941188.8801931057574'
+    // 環境変数からクライアントIDを取得
+    const clientId = process.env.NEXT_PUBLIC_SLACK_CLIENT_ID
+
+    if (!clientId) {
+      console.error('NEXT_PUBLIC_SLACK_CLIENT_IDが設定されていません')
+      toast({
+        title: 'エラーが発生しました',
+        description: 'Slack連携の設定が不完全です。管理者にお問い合わせください。',
+        variant: 'destructive',
+      })
+      return
+    }
     const redirectUri = `${window.location.origin}/api/slack/oauth`
     const scope =
       'app_mentions:read,assistant:write,channels:history,channels:read,chat:write,commands'

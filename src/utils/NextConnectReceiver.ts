@@ -154,11 +154,51 @@ export class NextConnectReceiver implements Receiver {
       return true
     }
 
-    // Edge Runtimeでは署名検証をスキップ（本番環境では別の方法で検証する必要があります）
-    console.warn(
-      'Edge Runtimeでは署名検証をスキップしています。本番環境では別の方法で検証する必要があります。'
-    )
-    return true
+    // Web Crypto APIを使用して署名を検証
+    try {
+      // 署名の検証
+      const baseString = `v0:${timestamp}:${body}`
+
+      // テキストエンコーダーを使用してUTF-8バイト配列に変換
+      const encoder = new TextEncoder()
+      const baseStringBytes = encoder.encode(baseString)
+      const signingSecretBytes = encoder.encode(this.signingSecret)
+
+      // HMAC-SHA256キーを作成
+      const key = await crypto.subtle.importKey(
+        'raw',
+        signingSecretBytes,
+        { name: 'HMAC', hash: 'SHA-256' },
+        false,
+        ['sign']
+      )
+
+      // 署名を計算
+      const signatureBytes = await crypto.subtle.sign('HMAC', key, baseStringBytes)
+
+      // 署名をHex文字列に変換
+      const signatureHex = Array.from(new Uint8Array(signatureBytes))
+        .map((b) => b.toString(16).padStart(2, '0'))
+        .join('')
+
+      const calculatedSignature = `v0=${signatureHex}`
+
+      // 署名を比較
+      return calculatedSignature === signature
+    } catch (error) {
+      console.error('署名検証エラー:', error)
+
+      // 開発環境では署名検証エラーをスキップするオプション
+      if (
+        process.env.NODE_ENV === 'development' &&
+        process.env.SKIP_SLACK_SIGNATURE_CHECK === 'true'
+      ) {
+        console.warn('開発環境で署名検証エラーをスキップしています。')
+        return true
+      }
+
+      return false
+    }
   }
 
   /**
