@@ -1,6 +1,6 @@
 {
   "display_information": {
-    "name": "/designer",
+    "name": "slash designer",
     "description": "コマンドひとつで、デザイン依頼・修正・進捗管理を効率化",
     "background_color": "#0d0d0d",
     "long_description": "/designerは、Slackに一行打つだけで、デザイン依頼がまとまるアプリです。\r\n依頼作成、修正指示、進捗管理ーーこれら全てをSlack内で、自然な会話の延長線上で回せます。\r\n「何を作りたいか」をアシスタントAIが質問してまとめ、「今どこまで進んでいるか」も自動でレポートします。\r\nNotionやFigmaと一緒に使うことも想定した設計なので、わざわざツールを増やしたくないチームにも最適です。"
@@ -13,7 +13,7 @@
     "slash_commands": [
       {
         "command": "/designer",
-        "url": "https://slash-designer-ai.vercel.app/api/slack/command",
+        "url": "https://slash-designer-ai.vercel.app/api/slack",
         "description": "デザイン依頼を作成",
         "usage_hint": "[依頼内容を書く]",
         "should_escape": false
@@ -35,12 +35,12 @@
   },
   "settings": {
     "event_subscriptions": {
-      "request_url": "https://slash-designer-ai.vercel.app/api/slack/events",
+      "request_url": "https://slash-designer-ai.vercel.app/api/slack",
       "bot_events": ["message.channels"]
     },
     "interactivity": {
       "is_enabled": true,
-      "request_url": "https://slash-designer-ai.vercel.app/api/slack/events"
+      "request_url": "https://slash-designer-ai.vercel.app/api/slack"
     },
     "org_deploy_enabled": false,
     "socket_mode_enabled": false,

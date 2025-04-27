@@ -13,13 +13,9 @@ import Link from 'next/link'
 import { Noto_Sans_JP, Geist_Mono } from 'next/font/google'
 import './globals.css'
 import { SignUpReloader } from '@/components/ui/SignUpReloader'
-import {
-  WorkspaceSelectorWithCondition,
-  HeaderTabsWithCondition,
-  ConditionalHeader,
-} from '@/components/ui/conditional-header-components'
 import { Toaster } from '@/components/ui/toaster'
 import { Button } from '@/components/ui/button'
+import { ActiveWorkspaceTracker } from '@/components/ui/conditional-header-components'
 
 const notoSansJP = Noto_Sans_JP({
   variable: '--font-noto-sans-jp',
@@ -58,10 +54,10 @@ export default function RootLayout({
           />
         </head>
         <body className={`${notoSansJP.variable} ${geistMono.variable} antialiased font-sans`}>
-          <ConditionalHeader>
+          <header className="bg-white w-full fixed flex items-center p-4 gap-4 h-16 z-50">
             <div className="flex items-center gap-2">
               <SignedIn>
-                <Link href="/workspace/select" className="flex items-center gap-2">
+                <Link href="/workspace" className="flex items-center gap-2">
                   <Image src="/logo.png" alt="Logo" width={100} height={40} />
                 </Link>
               </SignedIn>
@@ -70,17 +66,7 @@ export default function RootLayout({
                   <Image src="/logo.png" alt="Logo" width={100} height={40} />
                 </Link>
               </SignedOut>
-              <SignedIn>
-                {/* ワークスペース選択画面では非表示 */}
-                <WorkspaceSelectorWithCondition />
-              </SignedIn>
             </div>
-            <SignedIn>
-              <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                {/* ワークスペース選択画面では非表示 */}
-                <HeaderTabsWithCondition />
-              </div>
-            </SignedIn>
             <div className="flex-1" />
             <SignedOut>
               <SignInButton>
@@ -97,8 +83,9 @@ export default function RootLayout({
             <SignedIn>
               <UserButton />
             </SignedIn>
-          </ConditionalHeader>
+          </header>
           <SignUpReloader />
+          <ActiveWorkspaceTracker />
           <Toaster />
           <div className="mx-auto max-w-[980px]">{children}</div>
         </body>

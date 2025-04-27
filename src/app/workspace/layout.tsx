@@ -3,6 +3,8 @@ import { auth } from '@clerk/nextjs/server'
 import { redirect } from 'next/navigation'
 import { supabaseAdmin } from '@/lib/supabase'
 import { cache } from 'react'
+import { WorkspaceSidebar } from '@/components/ui/workspace-sidebar'
+import { Toaster } from '@/components/ui/toaster'
 
 // ユーザーのワークスペース存在確認をキャッシュ
 const checkUserWorkspaces = cache(async (userId: string) => {
@@ -46,11 +48,16 @@ export default async function WorkspaceLayout({ children }: { children: ReactNod
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden pt-16">
-      {/* Main content */}
+    <div className="flex h-screen overflow-hidden">
+      {/* サイドバー */}
+      <WorkspaceSidebar />
+
+      {/* メインコンテンツ */}
       <div className="flex-1 overflow-auto">
-        <main className="flex-1 h-full">{children}</main>
+        <main className="h-full">{children}</main>
       </div>
+
+      <Toaster />
     </div>
   )
 }

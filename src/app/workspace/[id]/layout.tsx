@@ -25,7 +25,7 @@ const getWorkspaceInfo = cache(async (userId: string, workspaceId: string) => {
       }
       // 1つだけの場合はそのワークスペースのページにリダイレクト
       else {
-        return { redirect: `/workspace/${workspaces[0].id}/designer` }
+        return { redirect: `/workspace/${workspaces[0].id}` }
       }
     }
 
@@ -60,9 +60,5 @@ export default async function WorkspaceIdLayout({
     redirect(result.redirect)
   }
 
-  return (
-    <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-auto">{children}</div>
-    </div>
-  )
+  return <div className="p-6 w-full">{children}</div>
 }

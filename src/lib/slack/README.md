@@ -1,115 +1,71 @@
-# Slack連携機能
+# Slack統合
 
-このディレクトリには、Slackとの連携機能が含まれています。デザイン依頼をSlack上で受け付け、AIとの会話を通じてタスクを作成する機能を提供します。
+このディレクトリには、Slackとの統合に関連するコードが含まれています。
 
-## 機能概要
+## 概要
 
-- Slackのスラッシュコマンド（`/designer`）を使用してデザイン依頼を開始
-- AIとの会話を通じて依頼内容を詳細化
-- 会話の内容からタスクを自動生成
-- タスク作成後にSlackに通知
+Slack統合は、Slack Boltフレームワークを使用して実装されています。これにより、Slackからのイベント（スラッシュコマンド、メッセージなど）を処理し、AIを活用したデザイン依頼の作成と管理を行うことができます。
 
-## ハイブリッドアプローチ
+## アーキテクチャ
 
-この実装では、無料プランと有料プランの両方のSlackユーザーに対応するハイブリッドアプローチを採用しています：
+### キャッチオールルート
 
-1. **基本機能（すべてのユーザー向け）**
+すべてのSlackリクエストは、単一のキャッチオールルート `/api/slack/[[...route]]/route.ts` で処理されます。このルートは、以下のエンドポイントを処理します：
 
-   - 従来のSlack APIを使用
-   - スラッシュコマンドとイベントAPIを活用
-   - セッション管理を自前で実装
+- `/api/slack/oauth` - OAuth認証コールバック
+- `/api/slack/command` - スラッシュコマンド（/designer）
+- `/api/slack/events` - イベントAPI（メッセージなど）
 
-2. **拡張機能（有料プランユーザー向け）**
-   - Slack AI Appsを使用
-   - より高度なUI体験
-   - 自動セッション管理
+### カスタムレシーバー
 
-## 設定方法
+Next.jsのAPI Routesで動作するカスタムレシーバー `NextConnectReceiver` を実装しています。このレシーバーは、Slack Boltフレームワークと連携して、リクエストの処理とレスポンスの生成を行います。
 
-### 1. 環境変数の設定
+## 主要コンポーネント
 
-以下の環境変数を`.env.local`ファイルに設定してください：
+### NextConnectReceiver (`/src/utils/NextConnectReceiver.ts`)
 
-```
-# Slack API設定
-SLACK_SIGNING_SECRET=your_slack_signing_secret
-SLACK_BOT_TOKEN=xoxb-your_bot_token
-SLACK_APP_TOKEN=xapp-your_app_token
+Next.jsのAPI Routesで動作するカスタムSlack Boltレシーバー。リクエストの検証、処理、レスポンスの生成を担当します。
 
-# OpenAI API設定
-OPENAI_API_KEY=your_openai_api_key
+### 認証 (`/src/lib/slack/auth.ts`)
 
-# アプリURL設定
-NEXT_PUBLIC_APP_URL=https://your-app-domain.com
-```
+Slackからのリクエストの署名検証とプラン情報の取得を行います。HMAC-SHA256を使用した署名検証を実装しています。
 
-### 2. Slackアプリの設定
+### メッセージ処理 (`/src/lib/slack/message.ts`)
 
-#### 基本機能（従来のSlack API）
+Slackへのメッセージ送信、ブロックの生成、レスポンスの作成などを行います。
 
-1. [Slack API](https://api.slack.com/apps)にアクセスし、新しいアプリを作成
-2. 「Slash Commands」セクションで以下のコマンドを追加：
+### セッション管理 (`/src/lib/slack/session.ts`)
 
-   - Command: `/designer`
-   - Request URL: `https://your-app-domain.com/api/slack/command`
-   - Short Description: デザイン依頼を開始
-   - Usage Hint: バナー作りたい
+チャットセッションの作成、取得、更新、削除などを行います。セッションはメモリ内に保存されます（本番環境ではRedisなどの外部ストレージの使用を推奨）。
 
-3. 「Event Subscriptions」を有効化：
+### AIチャット処理 (`/src/services/slack-ai-chat.ts`)
 
-   - Request URL: `https://your-app-domain.com/api/slack/events`
-   - Subscribe to bot events: `message.channels`, `message.groups`
-
-4. 「OAuth & Permissions」で以下のスコープを追加：
-
-   - `app_mentions:read`
-   - `channels:history`
-   - `channels:read`
-   - `chat:write`
-   - `commands`
-   - `groups:history`
-   - `groups:read`
-
-5. アプリをワークスペースにインストール
-
-#### 拡張機能（Slack AI Apps）
-
-有料プランユーザー向けの拡張機能を設定するには：
-
-1. [Slack API](https://api.slack.com/apps)にアクセス
-2. 「App Manifest」タブを選択
-3. `src/lib/slack/ai-app-manifest.json`の内容をコピー＆ペースト
-4. マニフェスト内のURLを実際のアプリURLに更新
-5. アプリをワークスペースにインストール
+OpenAI APIを使用したAIチャットの処理、JSONデータの抽出、タスクの作成などを行います。
 
 ## 使用方法
 
-### ユーザー向け
+### スラッシュコマンド
 
-1. Slackで`/designer バナー作りたい`のようにコマンドを入力
-2. AIとの会話を通じて依頼内容を詳細化
-3. AIが十分な情報を収集すると、JSONデータが生成される
-4. `!タスク作成`と入力してタスクを作成
-5. タスク作成完了の通知が表示される
+Slackで `/designer [依頼内容]` と入力することで、デザイン依頼を開始できます。例：
 
-### 開発者向け
+```
+/designer バナー作りたい
+```
 
-- `src/lib/slack/auth.ts` - Slack認証関連の機能
-- `src/lib/slack/message.ts` - メッセージ送信関連の機能
-- `src/lib/slack/session.ts` - セッション管理機能
-- `src/app/api/slack/command/route.ts` - スラッシュコマンド処理
-- `src/app/api/slack/events/route.ts` - イベント処理
-- `src/app/api/slack/ai-handler/route.ts` - AI Apps拡張機能
-- `src/services/slack-ai-chat.ts` - AIとの連携処理
+### タスク作成
 
-## 注意事項
+AIとの会話の中で、`!create_task` または `!タスク作成` と入力することで、会話内容からタスクを作成できます。
 
-- セッションは15分で期限切れになります
-- 本番環境では、セッション管理にRedisなどの外部ストレージを使用することを推奨します
-- Slack AI Appsの機能は、有料プランのSlackワークスペースでのみ利用可能です
+## 環境変数
 
-## トラブルシューティング
+以下の環境変数が必要です：
 
-- Slack署名の検証に失敗する場合は、`SLACK_SIGNING_SECRET`が正しく設定されているか確認してください
-- メッセージ送信に失敗する場合は、`SLACK_BOT_TOKEN`が正しく設定されているか、必要なスコープが付与されているか確認してください
-- OpenAI APIエラーが発生する場合は、`OPENAI_API_KEY`が正しく設定されているか確認してください
+- `SLACK_SIGNING_SECRET` - Slackアプリの署名シークレット
+- `SLACK_BOT_TOKEN` - Slackボットのトークン
+- `SLACK_CLIENT_ID` - SlackアプリのクライアントID
+- `SLACK_CLIENT_SECRET` - Slackアプリのクライアントシークレット
+- `OPENAI_API_KEY` - OpenAI APIキー
+
+## 開発環境での注意点
+
+開発環境では、`SKIP_SLACK_SIGNATURE_CHECK=true` を設定することで、署名検証をスキップできます。本番環境では必ず署名検証を有効にしてください。

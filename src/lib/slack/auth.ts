@@ -1,5 +1,7 @@
+import { createHmac } from 'crypto'
+
 /**
- * Slackからのリクエストを検証する（簡易版）
+ * Slackからのリクエストを検証する
  * @param signature Slackからのリクエストに含まれるX-Slack-Signatureヘッダー
  * @param timestamp Slackからのリクエストに含まれるX-Slack-Request-Timestampヘッダー
  * @param body リクエストボディ
@@ -26,12 +28,20 @@ export async function verifySlackRequest(
     return false
   }
 
-  // 本番環境では適切な署名検証を実装してください
-  // 開発環境では常にtrueを返します
-  console.warn(
-    '開発環境では署名検証をスキップしています。本番環境では適切な検証を実装してください。'
-  )
-  return true
+  // 署名の検証
+  const baseString = `v0:${timestamp}:${body}`
+  const hmac = createHmac('sha256', signingSecret)
+  const calculatedSignature = `v0=${hmac.update(baseString).digest('hex')}`
+
+  // 開発環境では署名検証をスキップするオプション
+  if (process.env.NODE_ENV === 'development' && process.env.SKIP_SLACK_SIGNATURE_CHECK === 'true') {
+    console.warn(
+      '開発環境で署名検証をスキップしています。本番環境では必ず署名検証を有効にしてください。'
+    )
+    return true
+  }
+
+  return calculatedSignature === signature
 }
 
 /**

@@ -2,7 +2,7 @@
 
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { useEffect } from 'react'
+import { useEffect as _useEffect } from 'react'
 
 // メッセージの型定義
 export type Message = {

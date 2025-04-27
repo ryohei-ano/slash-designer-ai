@@ -5,7 +5,7 @@ import { supabaseAdmin, isSupabaseConfigured } from '@/lib/supabase'
 import { revalidatePath } from 'next/cache'
 
 // 暗号化キー（本番環境では環境変数から取得）
-const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'default-encryption-key-for-development'
+const _ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || 'default-encryption-key-for-development'
 
 /**
  * トークンを暗号化する（簡易版）
