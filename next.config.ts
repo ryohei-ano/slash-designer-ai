@@ -12,6 +12,22 @@ const nextConfig: NextConfig = {
   env: {
     NEXT_PUBLIC_SLACK_CLIENT_ID: process.env.NEXT_PUBLIC_SLACK_CLIENT_ID,
   },
+  // Edge Runtimeでのポリフィル設定
+  experimental: {
+    serverComponentsExternalPackages: ['@slack/bolt'],
+  },
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      // サーバーサイドでのポリフィル
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        crypto: false,
+        path: false,
+        fs: false,
+      }
+    }
+    return config
+  },
 }
 
 export default nextConfig

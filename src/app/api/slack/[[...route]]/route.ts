@@ -257,7 +257,9 @@ export async function GET(request: NextRequest) {
       // stateパラメータからワークスペースIDを取得
       let workspaceId: string
       try {
-        const stateData = JSON.parse(Buffer.from(state, 'base64').toString('utf-8'))
+        // Base64デコード（Edge Runtimeと互換性のある方法）
+        const base64Decoded = atob(state)
+        const stateData = JSON.parse(base64Decoded)
         workspaceId = stateData.workspaceId
 
         if (!workspaceId) {
